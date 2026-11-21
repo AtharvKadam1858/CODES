@@ -1,0 +1,210 @@
+CC EXP 9 COLAB
+
+# ============================================================
+# Experiment No. 9
+# Title: Launch a Virtual Machine Using TryStack
+# (Online OpenStack Demo)
+# Aim:
+# To understand OpenStack and demonstrate virtual machine
+# creation, configuration, launching and termination
+# using Python.
+# ============================================================
+
+import uuid
+import datetime
+
+
+# -----------------------------
+# OpenStack Virtual Machine
+# -----------------------------
+class OpenStackVM:
+
+    def __init__(self, name, image, flavor):
+
+        self.vm_id = str(uuid.uuid4())[:8]
+
+        self.name = name
+        self.image = image
+        self.flavor = flavor
+
+        self.status = "BUILD"
+
+        self.created_at = str(datetime.datetime.now())
+
+        self.ip_address = None
+
+
+    # Launch Virtual Machine
+    def launch(self):
+
+        self.status = "ACTIVE"
+
+        self.ip_address = "192.168.1.100"
+
+        print("\nVirtual Machine Launched Successfully!")
+
+
+    # Stop Virtual Machine
+    def stop(self):
+
+        if self.status == "ACTIVE":
+
+            self.status = "SHUTOFF"
+
+            print("\nVirtual Machine Stopped Successfully!")
+
+        else:
+
+            print("\nVirtual Machine is Not Running!")
+
+
+    # Terminate Virtual Machine
+    def terminate(self):
+
+        self.status = "TERMINATED"
+
+        print("\nVirtual Machine Terminated Successfully!")
+
+
+    # Display VM Details
+    def display(self):
+
+        print("\n--- VIRTUAL MACHINE DETAILS ---")
+
+        print("VM ID         :", self.vm_id)
+        print("VM Name       :", self.name)
+        print("Image         :", self.image)
+        print("Flavor        :", self.flavor)
+        print("IP Address    :", self.ip_address)
+        print("Status        :", self.status)
+        print("Created At    :", self.created_at)
+
+
+# -----------------------------
+# OpenStack Cloud Class
+# -----------------------------
+class OpenStackCloud:
+
+    def __init__(self):
+
+        self.virtual_machines = []
+
+        print("OpenStack Cloud Initialized Successfully!")
+
+
+    # Create VM
+    def create_vm(self, name, image, flavor):
+
+        vm = OpenStackVM(name, image, flavor)
+
+        self.virtual_machines.append(vm)
+
+        print("\nVirtual Machine Created Successfully!")
+
+        return vm
+
+
+    # List VMs
+    def list_vms(self):
+
+        print("\n--- AVAILABLE VIRTUAL MACHINES ---")
+
+        for vm in self.virtual_machines:
+
+            print(
+                "Name:", vm.name,
+                "| ID:", vm.vm_id,
+                "| Status:", vm.status
+            )
+
+
+# -----------------------------
+# Main Program
+# -----------------------------
+print("=" * 60)
+print(" OPENSTACK VIRTUAL MACHINE SIMULATION ")
+print("=" * 60)
+
+# Initialize Cloud
+cloud = OpenStackCloud()
+
+
+# -----------------------------
+# Select Image and Flavor
+# -----------------------------
+print("\n--- AVAILABLE OPERATING SYSTEM IMAGES ---")
+
+images = [
+    "Ubuntu 22.04",
+    "CentOS 9",
+    "Debian 12"
+]
+
+for image in images:
+    print("-", image)
+
+
+print("\n--- AVAILABLE VM FLAVORS ---")
+
+flavors = {
+    "Small": "1 CPU, 2 GB RAM",
+    "Medium": "2 CPU, 4 GB RAM",
+    "Large": "4 CPU, 8 GB RAM"
+}
+
+for flavor, details in flavors.items():
+
+    print(flavor, ":", details)
+
+
+# -----------------------------
+# Create Virtual Machine
+# -----------------------------
+print("\n--- CREATING VIRTUAL MACHINE ---")
+
+vm = cloud.create_vm(
+    "Cloud-VM-01",
+    "Ubuntu 22.04",
+    "Medium"
+)
+
+
+# -----------------------------
+# Launch Virtual Machine
+# -----------------------------
+print("\n--- LAUNCHING VIRTUAL MACHINE ---")
+
+vm.launch()
+
+vm.display()
+
+
+# -----------------------------
+# List Virtual Machines
+# -----------------------------
+print("\n--- LISTING VIRTUAL MACHINES ---")
+
+cloud.list_vms()
+
+
+# -----------------------------
+# Stop Virtual Machine
+# -----------------------------
+print("\n--- STOPPING VIRTUAL MACHINE ---")
+
+vm.stop()
+
+vm.display()
+
+
+# -----------------------------
+# Terminate Virtual Machine
+# -----------------------------
+print("\n--- TERMINATING VIRTUAL MACHINE ---")
+
+vm.terminate()
+
+vm.display()
+
+
+print("\nOpenStack Simulation Completed Successfully.")

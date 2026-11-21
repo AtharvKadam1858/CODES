@@ -1,0 +1,358 @@
+ALL CC STEPS
+
+Experiment 1 – VirtualBox and different operating systems
+Software: Oracle VirtualBox
+Operating systems: Ubuntu and another OS flavour such as Fedora or Debian.
+
+Steps:
+1. Download and install VirtualBox on Windows.
+2. Download the Ubuntu ISO file from Ubuntu's official website.
+3. Open VirtualBox and click New.
+4. Enter the VM name Ubuntu.
+5. Select the downloaded Ubuntu ISO file.
+6. Allocate RAM and create a virtual hard disk. Use at least 4 GB RAM if your laptop has enough memory.
+7. Start the VM and complete the Ubuntu installation.
+8. Repeat the process for another OS flavour if your practical requires multiple OS installations.
+9. Take screenshots of the VirtualBox manager and running operating systems.
+The actual practical is performed through the VirtualBox interface; there is no Python code required for installing an operating system. Oracle's guide explains creating a VM and selecting an ISO image. 
+Oracle Documentation+1
+
+
+
+
+
+
+
+Experiment 2 – Install C compiler in the virtual machine
+Software: Ubuntu VM + GCC compiler.
+
+Steps:
+1. Start the Ubuntu VM created in Experiment 1.
+2. Open the Ubuntu Terminal.
+3. Install GCC:
+
+sudo apt update
+sudo apt install gcc -y
+
+
+4. Check the compiler:
+gcc --version
+
+
+5. Create a C file:
+nano program.c
+
+
+6. Paste this corrected program:
+
+#include <stdio.h>
+
+int main() {
+    int a, b, sum;
+
+    printf("Enter two numbers: ");
+    scanf("%d %d", &a, &b);
+
+    sum = a + b;
+
+    printf("Sum = %d\n", sum);
+
+    return 0;
+}
+
+
+
+7. Save the file using Ctrl+O, Enter, and Ctrl+X.
+8. Compile and execute:
+gcc program.c -o program
+./program
+
+
+Sample output:
+Enter two numbers: 10 20
+Sum = 30
+
+
+This is an actual C compiler running inside your Ubuntu virtual machine.
+
+
+
+
+
+
+
+
+
+
+
+
+Experiment 3 – Google App Engine Hello World application
+Software: Google Cloud Console + Google Cloud CLI + Python + Flask.
+
+Steps:
+1. Open the Google Cloud Console.
+2. Sign in and create a Google Cloud project.
+3. Enable billing if required and enable the App Engine Admin API.
+4. Install Google Cloud CLI on Windows using the official installation guide.
+5. Open Command Prompt and sign in:
+gcloud init
+
+
+6. Create a folder named cc_exp3.
+7. Inside it, create main.py:
+from flask import Flaskapp = Flask(__name__)@app.route("/")def home():    return "Hello World! Welcome to Google App Engine."if __name__ == "__main__":    app.run(host="0.0.0.0", port=8080)
+
+
+
+8. Create requirements.txt:
+Flask
+gunicorn
+
+
+9. Create app.yaml:
+runtime: python312
+entrypoint: gunicorn -b :$PORT main:app
+
+
+10. In Command Prompt, move into the project folder and deploy:
+gcloud config set project YOUR_PROJECT_ID
+gcloud app create
+gcloud app deploy
+
+
+11. Open the application:
+gcloud app browse
+
+
+Your browser should display the Hello World message.
+
+Google's documentation describes App Engine deployment using gcloud app deploy. 
+Google Cloud Documentation+1
+
+
+Cloud billing and project permissions may be required. Check charges and clean up cloud resources after your practical.
+
+
+
+
+
+
+
+
+
+
+
+Experiment 4 – Generate N even numbers / multiply two matrices using Google App Engine
+Software: Google Cloud Console + Google Cloud CLI + Python + Flask.
+
+Steps:
+1. Create a folder named cc_exp4.
+2. Create main.py with the following code.
+3. Create requirements.txt and app.yaml using the same contents as Experiment 3.
+4. Deploy using gcloud app deploy.
+5. Open the application using gcloud app browse.
+Corrected main.py:
+from flask import Flask, jsonifyapp = Flask(__name__)@app.route("/")def home():    return "Cloud Computing Experiment 4"@app.route("/even/<int:n>")def even_numbers(n):    if n < 1 or n > 100:        return jsonify({"error": "Enter N between 1 and 100"}), 400    numbers = [2 * i for i in range(1, n + 1)]    return jsonify({        "first_n_even_numbers": numbers    })@app.route("/matrix")def matrix_multiplication():    A = [[1, 2], [3, 4]]    B = [[5, 6], [7, 8]]    result = [[0, 0], [0, 0]]    for i in range(2):        for j in range(2):            for k in range(2):                result[i][j] += A[i][k] * B[k][j]    return jsonify({        "matrix_A": A,        "matrix_B": B,        "result": result    })
+
+
+
+Test these URLs after deployment:
+- https://YOUR_APP_URL/even/10 – displays the first 10 even numbers.
+- https://YOUR_APP_URL/matrix – displays the matrix multiplication result.
+The matrix result should be:
+[[19, 22],
+ [43, 50]]
+
+
+
+
+
+
+
+
+
+
+Experiment 5 – Cloud-based image recognition using AI
+Software: Google Colab + Python + Ultralytics YOLO.
+
+This experiment is suitable for Google Colab because it needs Python libraries and a pre-trained AI model, not a separate Ubuntu VM.
+
+Steps:
+1. Open Google Colab.
+2. Create a new notebook.
+3. Run the following code.
+4. Upload an image when prompted.
+5. View the detected objects and their confidence percentages.
+Corrected code:
+!pip install ultralytics -qfrom ultralytics import YOLOfrom google.colab import filesfrom IPython.display import displayfrom PIL import Imageimport matplotlib.pyplot as plt# Load YOLO modelmodel = YOLO("yolov8n.pt")# Upload imageuploaded = files.upload()image_path = next(iter(uploaded))# Detect objectsresults = model.predict(    source=image_path,    conf=0.25)# Print detected objectsprint("Detected Objects:")for result in results:    for box in result.boxes:        class_id = int(box.cls[0])        confidence = float(box.conf[0])        print(            model.names[class_id],            "-",            round(confidence * 100, 2),            "%"        )# Display output imageannotated = results[0].plot()plt.figure(figsize=(10, 8))plt.imshow(annotated[:, :, ::-1])plt.axis("off")plt.title("Object Detection Result")plt.show()
+
+
+
+Expected result: The uploaded image appears with bounding boxes around detected objects, along with object names and confidence scores.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Experiment 6 – CloudSim simulation and scheduling algorithm
+Software: Java JDK + Eclipse IDE + CloudSim.
+
+For a current Java-based option, I recommend CloudSim Plus. It is a maintained CloudSim-based simulation framework. Its current project instructions require a recent Java JDK and Maven; check the version requirements before installing. 
+GitHub+1
+
+
+Steps:
+1. Install a compatible JDK.
+2. Install Eclipse IDE for Java Developers.
+3. Download the CloudSim Plus examples project.
+4. In Eclipse, select File → Import → Existing Maven Projects.
+5. Select the downloaded project folder.
+6. Allow Maven to download the dependencies.
+7. Open the example Java source files under src/main/java.
+8. Run the basic simulation example.
+9. For your practical, use a task scheduling example and record the VM allocation and task completion results.
+Important: CloudSim is not the same as the Python scheduling simulation previously provided. For your submission, use a real CloudSim/CloudSim Plus project and show its simulation output. The official examples repository provides runnable examples and Maven setup instructions. 
+GitHub+1
+
+
+
+
+
+
+
+
+
+
+
+
+Experiment 7 – Transfer files from one virtual machine to another
+Software: VirtualBox + Two Ubuntu VMs + SSH/SCP.
+
+Steps:
+1. Open VirtualBox.
+2. Create two Ubuntu VMs named VM1 and VM2.
+3. Start both VMs and connect them to the same network (for example, Bridged Adapter, if your network allows it).
+4. In both Ubuntu terminals, install SSH:
+sudo apt update
+sudo apt install openssh-server -y
+
+
+5. In VM2, check its IP address:
+hostname -I
+
+
+6. In VM1, create a sample file:
+echo "Hello, this file is transferred from VM1 to VM2." > sample.txt
+
+
+7. Transfer the file using SCP:
+scp sample.txt username@VM2_IP:/home/username/
+
+
+Replace username with your Ubuntu username and VM2_IP with the IP address of VM2.
+8. Enter VM2's password if prompted.
+9. In VM2, verify the file:
+cat ~/sample.txt
+
+
+Expected output:
+Hello, this file is transferred from VM1 to VM2.
+
+
+This demonstrates an actual file transfer between two virtual machines, rather than copying between two folders on one computer.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Experiment 8 – AI-based auto-scaling using ML predictions
+Software: Python + Scikit-learn + Matplotlib.
+IDE: Google Colab or Jupyter Notebook.
+
+This experiment is best demonstrated as an ML-based prediction and scaling-policy simulation. Actual automatic creation and removal of cloud VMs would additionally require a cloud account, permissions and a configured scaling service.
+
+Steps:
+1. Open Google Colab.
+2. Create a new notebook.
+3. Run the following code.
+4. Observe predicted CPU usage.
+5. Observe the number of VMs changing according to the predicted load.
+Corrected code:
+!pip install scikit-learn matplotlib -qimport numpy as npimport matplotlib.pyplot as pltfrom sklearn.linear_model import LinearRegression# Training datahours = np.array([    [1], [2], [3], [4], [5],    [6], [7], [8], [9], [10]])cpu_usage = np.array([    20, 25, 30, 35, 40,    45, 50, 60, 70, 80])# Train ML modelmodel = LinearRegression()model.fit(hours, cpu_usage)# Predict future CPU usagefuture_hours = np.array([    [11], [12], [13], [14], [15]])predictions = np.clip(    model.predict(future_hours), 0, 100)vm_count = 1print("AI-Based Auto Scaling Results")for hour, cpu in zip(future_hours, predictions):
+
+
+
+Expected result: Predicted CPU usage, scaling decisions, VM count and a graph are displayed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Experiment 9 – Launch a Virtual Machine using TryStack (OpenStack)
+Software: OpenStack Horizon Dashboard (web interface) + an available OpenStack cloud account.
+
+Important: TryStack is an old public OpenStack sandbox and may no longer be available. Do not spend your practical preparation time assuming you can register and launch a VM there. If your college provides an OpenStack dashboard, use that instead. 
+GitHub+1
+
+
+Steps using an available OpenStack dashboard:
+1. Get the OpenStack dashboard URL and login credentials from your college or lab administrator.
+2. Open the dashboard in your browser and log in.
+3. Open Project → Compute → Instances.
+4. Click Launch Instance.
+5. Enter the instance name, for example MyCloudVM.
+6. Select an available Ubuntu image.
+7. Select a suitable flavor (CPU, RAM and disk configuration).
+8. Select the network and key pair provided by your lab.
+9. Click Launch Instance.
+10. Wait until the instance status becomes Active.
+11. Open the instance details or console to verify that it has launched.
+Expected output: An Ubuntu virtual machine appears in the Instances list with an Active status.
+
+OpenStack's official user guide explains the instance launch process. 
+OpenStack Docs+1
+
+
+
+
+
+
+3. Final software checklist
+Here is what you need to install or access before performing the practicals.
+Experiment	Main software/platform	Actual code or practical
+1	VirtualBox	Create and install OS virtual machines
+2	Ubuntu + GCC	C program
+3	Google App Engine	Python Flask web application
+4	Google App Engine	Python web application with even numbers and matrix multiplication
+5	Google Colab + YOLO	Python object detection
+6	Eclipse + Java + CloudSim	Java cloud simulation
+7	VirtualBox + Ubuntu + SCP	Linux file transfer
+8	Google Colab/Jupyter + Scikit-learn	ML prediction and auto-scaling simulation
+9	OpenStack Horizon	Launch an actual cloud VM

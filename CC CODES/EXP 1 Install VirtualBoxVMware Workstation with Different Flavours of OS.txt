@@ -1,0 +1,99 @@
+CC EXP 1 COLAB
+
+# ============================================================
+# Experiment No. 1
+# Title: Install VirtualBox/VMware Workstation with Different
+# Flavours of OS
+# Aim:
+# To understand virtual machines and demonstrate the
+# configuration of different operating systems.
+# ============================================================
+
+import datetime
+
+
+# -----------------------------
+# Virtual Machine Class
+# -----------------------------
+class VirtualMachine:
+
+    def __init__(self, name, os_name, memory, cpu, storage):
+
+        self.name = name
+        self.os_name = os_name
+        self.memory = memory
+        self.cpu = cpu
+        self.storage = storage
+        self.status = "Powered Off"
+
+    def start(self):
+
+        self.status = "Running"
+        print(self.name, "started successfully!")
+
+    def stop(self):
+
+        self.status = "Powered Off"
+        print(self.name, "stopped successfully!")
+
+    def display(self):
+
+        print("\nVirtual Machine Name :", self.name)
+        print("Operating System     :", self.os_name)
+        print("RAM                  :", self.memory, "GB")
+        print("CPU Cores            :", self.cpu)
+        print("Storage              :", self.storage, "GB")
+        print("Status               :", self.status)
+
+
+# -----------------------------
+# Main Program
+# -----------------------------
+print("=" * 60)
+print(" VIRTUAL MACHINE CONFIGURATION ")
+print("=" * 60)
+
+# Create Virtual Machines
+vm1 = VirtualMachine(
+    "VM1", "Ubuntu Linux", 4, 2, 40
+)
+
+vm2 = VirtualMachine(
+    "VM2", "Windows 11", 8, 4, 80
+)
+
+vm3 = VirtualMachine(
+    "VM3", "Fedora Linux", 4, 2, 50
+)
+
+vm4 = VirtualMachine(
+    "VM4", "Debian Linux", 2, 2, 30
+)
+
+virtual_machines = [vm1, vm2, vm3, vm4]
+
+# Display VM configurations
+print("\n--- VIRTUAL MACHINE DETAILS ---")
+
+for vm in virtual_machines:
+    vm.display()
+
+# Start all virtual machines
+print("\n--- STARTING VIRTUAL MACHINES ---")
+
+for vm in virtual_machines:
+    vm.start()
+
+# Display running status
+print("\n--- RUNNING VM STATUS ---")
+
+for vm in virtual_machines:
+    vm.display()
+
+# Stop all virtual machines
+print("\n--- STOPPING VIRTUAL MACHINES ---")
+
+for vm in virtual_machines:
+    vm.stop()
+
+print("\nVirtual Machine Configuration Completed.")

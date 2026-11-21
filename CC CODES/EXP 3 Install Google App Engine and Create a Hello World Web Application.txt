@@ -1,0 +1,79 @@
+CC EXP 3 COLAB
+
+# ============================================================
+# Experiment No. 3
+# Title: Install Google App Engine and Create a Hello World
+# Web Application
+# Aim:
+# To create a simple Hello World web application using Python.
+# ============================================================
+
+# -----------------------------
+# Install Flask
+# -----------------------------
+!pip install flask -q
+
+from flask import Flask, jsonify
+
+
+# -----------------------------
+# Create Flask Application
+# -----------------------------
+app = Flask(__name__)
+
+
+# Home Route
+@app.route("/")
+def home():
+
+    return """
+    <html>
+    <head>
+        <title>Hello World Application</title>
+    </head>
+    <body>
+        <h1>Welcome to Google App Engine</h1>
+        <h2>Hello World!</h2>
+        <p>Cloud Computing Lab Experiment 3</p>
+        <p>Web Application Created Successfully.</p>
+    </body>
+    </html>
+    """
+
+
+# About Route
+@app.route("/about")
+def about():
+
+    return jsonify({
+        "Application": "Hello World",
+        "Platform": "Cloud Application Simulation",
+        "Status": "Running Successfully"
+    })
+
+
+# -----------------------------
+# Main Program
+# -----------------------------
+print("=" * 60)
+print(" HELLO WORLD WEB APPLICATION ")
+print("=" * 60)
+
+# Use Flask test client
+with app.test_client() as client:
+
+    print("\n--- HOME PAGE ---")
+
+    response = client.get("/")
+
+    print("Status Code:", response.status_code)
+    print(response.get_data(as_text=True))
+
+    print("\n--- ABOUT PAGE ---")
+
+    response = client.get("/about")
+
+    print("Status Code:", response.status_code)
+    print(response.get_json())
+
+print("\nWeb Application Created Successfully.")

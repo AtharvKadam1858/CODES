@@ -1,0 +1,108 @@
+CC EXP 5 COLAB
+
+# ============================================================
+# Experiment No. 5
+# Title: Cloud-Based Image Recognition Using AI for Object
+# Detection and Classification
+# Aim:
+# To perform object detection and classification using
+# a pretrained AI model in Google Colab.
+# ============================================================
+
+# -----------------------------
+# Install Required Libraries
+# -----------------------------
+!pip install ultralytics -q
+
+import cv2
+import matplotlib.pyplot as plt
+from ultralytics import YOLO
+from google.colab import files
+
+
+# -----------------------------
+# Load Pretrained YOLO Model
+# -----------------------------
+print("=" * 60)
+print(" CLOUD-BASED IMAGE RECOGNITION ")
+print("=" * 60)
+
+print("\nLoading YOLO Model...")
+
+model = YOLO("yolov8n.pt")
+
+print("YOLO Model Loaded Successfully!")
+
+
+# -----------------------------
+# Upload Image
+# -----------------------------
+print("\nUpload an Image for Detection")
+
+uploaded = files.upload()
+
+if not uploaded:
+    raise ValueError("No image uploaded!")
+
+image_path = next(iter(uploaded.keys()))
+
+
+# -----------------------------
+# Perform Object Detection
+# -----------------------------
+print("\n--- OBJECT DETECTION ---")
+
+results = model.predict(
+    source=image_path,
+    conf=0.25,
+    verbose=False
+)
+
+result = results[0]
+
+# Display detected objects
+if result.boxes is not None and len(result.boxes) > 0:
+
+    print("\nDetected Objects:")
+
+    for box in result.boxes:
+
+        class_id = int(box.cls[0])
+        confidence = float(box.conf[0])
+
+        object_name = model.names[class_id]
+
+        print(
+            "Object:",
+            object_name,
+            "| Confidence:",
+            round(confidence * 100, 2),
+            "%"
+        )
+
+else:
+
+    print("No Objects Detected!")
+
+
+# -----------------------------
+# Display Detection Image
+# -----------------------------
+print("\n--- DETECTION RESULT ---")
+
+annotated_image = result.plot()
+
+annotated_image = cv2.cvtColor(
+    annotated_image,
+    cv2.COLOR_BGR2RGB
+)
+
+plt.figure(figsize=(10, 7))
+
+plt.imshow(annotated_image)
+plt.axis("off")
+plt.title("AI Object Detection Result")
+
+plt.show()
+
+print("\nImage Recognition Completed Successfully.")

@@ -1,0 +1,119 @@
+CC EXP 7 COLAB
+
+# ============================================================
+# Experiment No. 7
+# Title: Procedure to Transfer Files from One Virtual
+# Machine to Another
+# Aim:
+# To demonstrate file transfer between two virtual machines
+# using Python.
+# ============================================================
+
+import os
+import shutil
+
+
+# -----------------------------
+# Create VM Directories
+# -----------------------------
+vm1 = "/content/VM1"
+vm2 = "/content/VM2"
+
+os.makedirs(vm1, exist_ok=True)
+os.makedirs(vm2, exist_ok=True)
+
+
+# -----------------------------
+# Create Sample File
+# -----------------------------
+file_name = "sample.txt"
+
+source_file = os.path.join(vm1, file_name)
+
+with open(source_file, "w") as file:
+
+    file.write("Welcome to Cloud Computing Lab.\n")
+    file.write("This file is transferred from VM1 to VM2.\n")
+    file.write("File Transfer Successful!")
+
+
+# -----------------------------
+# Display Source File
+# -----------------------------
+print("=" * 60)
+print(" FILE TRANSFER BETWEEN VIRTUAL MACHINES ")
+print("=" * 60)
+
+print("\n--- SOURCE VIRTUAL MACHINE ---")
+
+print("VM1 Directory:", vm1)
+
+print("\nFiles in VM1:")
+
+print(os.listdir(vm1))
+
+
+# -----------------------------
+# Transfer File
+# -----------------------------
+print("\n--- TRANSFERRING FILE ---")
+
+destination_file = os.path.join(vm2, file_name)
+
+shutil.copy2(source_file, destination_file)
+
+print("File Transferred Successfully!")
+
+
+# -----------------------------
+# Display Destination File
+# -----------------------------
+print("\n--- DESTINATION VIRTUAL MACHINE ---")
+
+print("VM2 Directory:", vm2)
+
+print("\nFiles in VM2:")
+
+print(os.listdir(vm2))
+
+
+# -----------------------------
+# Verify File Transfer
+# -----------------------------
+print("\n--- VERIFYING FILE TRANSFER ---")
+
+if os.path.exists(destination_file):
+
+    print("File Found in VM2!")
+
+    with open(destination_file, "r") as file:
+
+        print("\nTransferred File Content:")
+        print(file.read())
+
+else:
+
+    print("File Transfer Failed!")
+
+
+# -----------------------------
+# Compare File Contents
+# -----------------------------
+if os.path.exists(destination_file):
+
+    with open(source_file, "rb") as f1:
+        source_data = f1.read()
+
+    with open(destination_file, "rb") as f2:
+        destination_data = f2.read()
+
+    if source_data == destination_data:
+
+        print("File Integrity: Verified")
+
+    else:
+
+        print("File Integrity: Failed")
+
+
+print("\nFile Transfer Experiment Completed.")

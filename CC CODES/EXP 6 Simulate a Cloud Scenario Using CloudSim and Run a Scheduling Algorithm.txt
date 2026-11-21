@@ -1,0 +1,204 @@
+CC EXP 6 COLAB
+
+# ============================================================
+# Experiment No. 6
+# Title: Simulate a Cloud Scenario Using CloudSim and
+# Run a Scheduling Algorithm
+# Aim:
+# To simulate a cloud computing environment and execute
+# scheduling algorithms using Python.
+# ============================================================
+
+import matplotlib.pyplot as plt
+
+
+# -----------------------------
+# Cloudlet Class
+# -----------------------------
+class Cloudlet:
+
+    def __init__(self, task_id, length):
+
+        self.task_id = task_id
+        self.length = length
+
+
+# -----------------------------
+# Virtual Machine Class
+# -----------------------------
+class VirtualMachine:
+
+    def __init__(self, vm_id, mips):
+
+        self.vm_id = vm_id
+        self.mips = mips
+        self.tasks = []
+        self.execution_time = 0
+
+
+# -----------------------------
+# FCFS Scheduling
+# -----------------------------
+def fcfs_scheduling(cloudlets, vms):
+
+    print("\n--- FCFS SCHEDULING ---")
+
+    for vm in vms:
+        vm.tasks = []
+        vm.execution_time = 0
+
+    for task in cloudlets:
+
+        vm = min(
+            vms,
+            key=lambda machine: machine.execution_time
+        )
+
+        vm.tasks.append(task)
+
+        vm.execution_time += task.length / vm.mips
+
+        print(
+            "Task", task.task_id,
+            "assigned to VM", vm.vm_id
+        )
+
+    return vms
+
+
+# -----------------------------
+# Round Robin Scheduling
+# -----------------------------
+def round_robin_scheduling(cloudlets, vms):
+
+    print("\n--- ROUND ROBIN SCHEDULING ---")
+
+    for vm in vms:
+        vm.tasks = []
+        vm.execution_time = 0
+
+    for i, task in enumerate(cloudlets):
+
+        vm = vms[i % len(vms)]
+
+        vm.tasks.append(task)
+
+        vm.execution_time += task.length / vm.mips
+
+        print(
+            "Task", task.task_id,
+            "assigned to VM", vm.vm_id
+        )
+
+    return vms
+
+
+# -----------------------------
+# Display Results
+# -----------------------------
+def display_results(vms, algorithm):
+
+    print("\n---", algorithm, "RESULTS ---")
+
+    for vm in vms:
+
+        print("\nVirtual Machine:", vm.vm_id)
+
+        print(
+            "Assigned Tasks:",
+            [task.task_id for task in vm.tasks]
+        )
+
+        print(
+            "Execution Time:",
+            round(vm.execution_time, 2),
+            "seconds"
+        )
+
+
+# -----------------------------
+# Main Program
+# -----------------------------
+print("=" * 60)
+print(" CLOUD COMPUTING SIMULATION ")
+print("=" * 60)
+
+# Create Cloudlets
+cloudlets = [
+    Cloudlet(1, 1000),
+    Cloudlet(2, 2000),
+    Cloudlet(3, 3000),
+    Cloudlet(4, 1500),
+    Cloudlet(5, 2500),
+    Cloudlet(6, 1800)
+]
+
+# Create Virtual Machines
+vms = [
+    VirtualMachine(1, 1000),
+    VirtualMachine(2, 2000),
+    VirtualMachine(3, 1500)
+]
+
+print("\n--- CLOUD DATA CENTER ---")
+
+print("Number of Virtual Machines:", len(vms))
+print("Number of Cloudlets:", len(cloudlets))
+
+for vm in vms:
+
+    print(
+        "VM ID:", vm.vm_id,
+        "| MIPS:", vm.mips
+    )
+
+
+# FCFS Scheduling
+fcfs_scheduling(cloudlets, vms)
+
+display_results(vms, "FCFS")
+
+fcfs_times = [
+    vm.execution_time for vm in vms
+]
+
+
+# Round Robin Scheduling
+round_robin_scheduling(cloudlets, vms)
+
+display_results(vms, "ROUND ROBIN")
+
+rr_times = [
+    vm.execution_time for vm in vms
+]
+
+
+# -----------------------------
+# Performance Comparison
+# -----------------------------
+print("\n--- PERFORMANCE COMPARISON ---")
+
+print("FCFS Total Completion Time:",
+      round(max(fcfs_times), 2), "seconds")
+
+print("Round Robin Total Completion Time:",
+      round(max(rr_times), 2), "seconds")
+
+
+# -----------------------------
+# Display Graph
+# -----------------------------
+plt.figure(figsize=(8, 5))
+
+plt.bar(
+    ["FCFS", "Round Robin"],
+    [max(fcfs_times), max(rr_times)]
+)
+
+plt.title("Cloud Scheduling Algorithm Comparison")
+plt.xlabel("Scheduling Algorithm")
+plt.ylabel("Total Completion Time (seconds)")
+
+plt.show()
+
+print("\nCloud Simulation Completed Successfully.")

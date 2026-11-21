@@ -1,0 +1,92 @@
+CC EXP 2 COLAB
+
+# ============================================================
+# Experiment No. 2
+# Title: Install a C Compiler in the Virtual Machine and
+# Execute Simple Programs
+# Aim:
+# To install GCC compiler and execute C programs.
+# ============================================================
+
+# -----------------------------
+# Install GCC Compiler
+# -----------------------------
+!apt-get update -qq
+!apt-get install -y gcc -qq
+
+# Check GCC Version
+print("\n--- GCC COMPILER VERSION ---")
+
+!gcc --version
+
+
+# -----------------------------
+# Create C Program
+# -----------------------------
+c_code = r'''
+#include <stdio.h>
+
+int main() {
+
+    int a, b, sum;
+
+    printf("C PROGRAM EXECUTION\n");
+
+    printf("Enter first number: ");
+    scanf("%d", &a);
+
+    printf("Enter second number: ");
+    scanf("%d", &b);
+
+    sum = a + b;
+
+    printf("\nFirst Number  : %d", a);
+    printf("\nSecond Number : %d", b);
+    printf("\nSum           : %d\n", sum);
+
+    return 0;
+}
+'''
+
+with open("program.c", "w") as file:
+    file.write(c_code)
+
+print("\nC Program Created Successfully!")
+
+
+# -----------------------------
+# Compile C Program
+# -----------------------------
+print("\n--- COMPILING C PROGRAM ---")
+
+import subprocess
+
+result = subprocess.run(
+    ["gcc", "program.c", "-o", "program"],
+    capture_output=True,
+    text=True
+)
+
+if result.returncode == 0:
+    print("Compilation Successful!")
+else:
+    print(result.stderr)
+
+
+# -----------------------------
+# Execute C Program
+# -----------------------------
+print("\n--- EXECUTING C PROGRAM ---")
+
+if result.returncode == 0:
+
+    execution = subprocess.run(
+        ["./program"],
+        input="10\n20\n",
+        capture_output=True,
+        text=True
+    )
+
+    print(execution.stdout)
+
+print("C Program Executed Successfully.")
