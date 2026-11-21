@@ -1,0 +1,487 @@
+BCT EXP 10 SOLIDITY
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+// ============================================================
+// Experiment No. 10
+// Title: Implementation of a Decentralized Voting System
+// on Blockchain
+// Aim:
+// To implement a decentralized voting system using Solidity
+// smart contracts to ensure transparent and secure voting.
+// ============================================================
+
+contract VotingSystem {
+
+    struct Candidate {
+        uint256 id;
+        string name;
+        uint256 voteCount;
+    }
+
+    address public owner;
+
+    Candidate[] public candidates;
+
+    mapping(address => bool) public hasVoted;
+
+    bool public votingStarted;
+    bool public votingEnded;
+
+
+    // Constructor
+    constructor() {
+
+        owner = msg.sender;
+
+        votingStarted = false;
+        votingEnded = false;
+    }
+
+
+    // Owner Verification
+    modifier onlyOwner() {
+
+        require(
+            msg.sender == owner,
+            "Only owner can perform this action"
+        );
+
+        _;
+    }
+
+
+    // Add Candidate
+    function addCandidate(
+        string memory name
+    ) public onlyOwner {
+
+        require(!votingStarted, "Voting already started");
+
+        candidates.push(
+            Candidate(
+                candidates.length,
+                name,
+                0
+            )
+        );
+    }
+
+
+    // Start Voting
+    function startVoting() public onlyOwner {
+
+        require(!votingStarted, "Voting already started");
+
+        require(!votingEnded, "Voting already ended");
+
+        require(candidates.length > 0, "No candidates");
+
+        votingStarted = true;
+    }
+
+
+    // Cast Vote
+    function vote(uint256 candidateId) public {
+
+        require(votingStarted, "Voting not started");
+
+        require(!votingEnded, "Voting ended");
+
+        require(!hasVoted[msg.sender], "Already voted");
+
+        require(
+            candidateId < candidates.length,
+            "Invalid candidate"
+        );
+
+        candidates[candidateId].voteCount++;
+
+        hasVoted[msg.sender] = true;
+    }
+
+
+    // End Voting
+    function endVoting() public onlyOwner {
+
+        require(votingStarted, "Voting not started");
+
+        require(!votingEnded, "Voting already ended");
+
+        votingEnded = true;
+    }
+
+
+    // Get Candidate Details
+    function getCandidate(
+        uint256 candidateId
+    ) public view returns (
+        uint256,
+        string memory,
+        uint256
+    ) {
+
+        require(
+            candidateId < candidates.length,
+            "Invalid candidate"
+        );
+
+        Candidate memory candidate = candidates[candidateId];
+
+        return (
+            candidate.id,
+            candidate.name,
+            candidate.voteCount
+        );
+    }
+
+
+    // Get Total Candidates
+    function getTotalCandidates() public view returns (uint256) {
+
+        return candidates.length;
+    }
+
+
+    // Get Election Winner
+    function getWinner() public view returns (string memory) {
+
+        require(votingEnded, "Voting is not finished");
+
+        require(candidates.length > 0, "No candidates");
+
+        uint256 winningIndex = 0;
+
+        for (uint256 i = 1; i < candidates.length; i++) {
+
+            if (
+                candidates[i].voteCount >
+                candidates[winningIndex].voteCount
+            ) {
+
+                winningIndex = i;
+            }
+        }
+
+        return candidates[winningIndex].name;
+    }
+}
+
+COLAB
+
+# ============================================================
+# Experiment No. 10
+# Title: Implementation of a Decentralized Voting System
+# on Blockchain
+# Aim:
+# To implement a decentralized voting system using Python
+# and blockchain concepts to ensure transparent and secure
+# voting.
+# ============================================================
+
+import hashlib
+import datetime
+
+
+# -----------------------------
+# Candidate Class
+# -----------------------------
+class Candidate:
+
+    def __init__(self, candidate_id, name):
+
+        self.candidate_id = candidate_id
+        self.name = name
+        self.vote_count = 0
+
+
+# -----------------------------
+# Voting Blockchain Class
+# -----------------------------
+class VotingBlockchain:
+
+    def __init__(self):
+
+        self.chain = []
+        self.candidates = []
+        self.voters = set()
+
+        self.voting_started = False
+        self.voting_ended = False
+
+        self.create_genesis_block()
+
+
+    # Create Genesis Block
+    def create_genesis_block(self):
+
+        data = "Voting System Started"
+
+        block = {
+            "index": 0,
+            "timestamp": str(datetime.datetime.now()),
+            "data": data,
+            "previous_hash": "0"
+        }
+
+        block["hash"] = self.calculate_hash(block)
+
+        self.chain.append(block)
+
+
+    # Calculate Block Hash
+    def calculate_hash(self, block):
+
+        data = (
+            str(block["index"])
+            + block["timestamp"]
+            + block["data"]
+            + block["previous_hash"]
+        )
+
+        return hashlib.sha256(data.encode()).hexdigest()
+
+
+    # Add Candidate
+    def add_candidate(self, name):
+
+        if self.voting_started:
+            print("Cannot Add Candidate After Voting Starts!")
+            return
+
+        candidate = Candidate(
+            len(self.candidates),
+            name
+        )
+
+        self.candidates.append(candidate)
+
+        print("Candidate Added:", name)
+
+
+    # Start Voting
+    def start_voting(self):
+
+        if self.voting_started:
+            print("Voting Already Started!")
+            return
+
+        if len(self.candidates) == 0:
+            print("No Candidates Available!")
+            return
+
+        self.voting_started = True
+
+        print("\nVoting Started Successfully!")
+
+
+    # Cast Vote
+    def cast_vote(self, voter, candidate_id):
+
+        if not self.voting_started:
+            print("Voting Has Not Started!")
+            return
+
+        if self.voting_ended:
+            print("Voting Has Ended!")
+            return
+
+        if voter in self.voters:
+            print("Voter Has Already Voted!")
+            return
+
+        if candidate_id < 0 or candidate_id >= len(self.candidates):
+            print("Invalid Candidate ID!")
+            return
+
+        candidate = self.candidates[candidate_id]
+
+        candidate.vote_count += 1
+
+        self.voters.add(voter)
+
+        # Create blockchain transaction
+        transaction = (
+            "Voter " + voter
+            + " voted for " + candidate.name
+        )
+
+        previous_hash = self.chain[-1]["hash"]
+
+        block = {
+            "index": len(self.chain),
+            "timestamp": str(datetime.datetime.now()),
+            "data": transaction,
+            "previous_hash": previous_hash
+        }
+
+        block["hash"] = self.calculate_hash(block)
+
+        self.chain.append(block)
+
+        print("\nVote Cast Successfully!")
+        print("Voter:", voter)
+        print("Candidate:", candidate.name)
+
+
+    # End Voting
+    def end_voting(self):
+
+        if not self.voting_started:
+            print("Voting Has Not Started!")
+            return
+
+        if self.voting_ended:
+            print("Voting Already Ended!")
+            return
+
+        self.voting_ended = True
+
+        print("\nVoting Ended Successfully!")
+
+
+    # Display Results
+    def display_results(self):
+
+        print("\n--- VOTING RESULTS ---")
+
+        for candidate in self.candidates:
+
+            print(
+                candidate.name,
+                ":",
+                candidate.vote_count,
+                "Votes"
+            )
+
+
+    # Find Winner
+    def get_winner(self):
+
+        if not self.voting_ended:
+            print("Voting Is Not Finished!")
+            return
+
+        if not self.candidates:
+            print("No Candidates Available!")
+            return
+
+        maximum_votes = max(
+            candidate.vote_count
+            for candidate in self.candidates
+        )
+
+        winners = [
+            candidate.name
+            for candidate in self.candidates
+            if candidate.vote_count == maximum_votes
+        ]
+
+        if len(winners) == 1:
+            print("\nElection Winner:", winners[0])
+        else:
+            print("\nElection Result: Tie")
+
+            for winner in winners:
+                print("Candidate:", winner)
+
+
+    # Validate Blockchain
+    def validate_blockchain(self):
+
+        for i in range(len(self.chain)):
+
+            current = self.chain[i]
+
+            if current["hash"] != self.calculate_hash(current):
+                return False
+
+            if i > 0:
+
+                previous = self.chain[i - 1]
+
+                if current["previous_hash"] != previous["hash"]:
+                    return False
+
+        return True
+
+
+    # Display Blockchain
+    def display_blockchain(self):
+
+        print("\n--- BLOCKCHAIN RECORDS ---")
+
+        for block in self.chain:
+
+            print("\n" + "-" * 50)
+
+            print("Block Index   :", block["index"])
+            print("Timestamp     :", block["timestamp"])
+            print("Transaction   :", block["data"])
+            print("Previous Hash :", block["previous_hash"])
+            print("Current Hash  :", block["hash"])
+
+
+# -----------------------------
+# Main Program
+# -----------------------------
+print("=" * 60)
+print(" DECENTRALIZED VOTING SYSTEM ")
+print("=" * 60)
+
+voting = VotingBlockchain()
+
+# Add Candidates
+print("\n1. Adding Candidates")
+
+voting.add_candidate("Candidate A")
+voting.add_candidate("Candidate B")
+voting.add_candidate("Candidate C")
+
+# Start Voting
+print("\n2. Starting Voting")
+
+voting.start_voting()
+
+# Cast Votes
+print("\n3. Casting Votes")
+
+voting.cast_vote("Voter1", 0)
+voting.cast_vote("Voter2", 1)
+voting.cast_vote("Voter3", 0)
+voting.cast_vote("Voter4", 2)
+voting.cast_vote("Voter5", 0)
+
+# Demonstrate Duplicate Voting Prevention
+print("\n4. Testing Duplicate Voting")
+
+voting.cast_vote("Voter1", 1)
+
+# Display Voting Results
+print("\n5. Voting Results")
+
+voting.display_results()
+
+# End Voting
+print("\n6. Ending Voting")
+
+voting.end_voting()
+
+# Display Winner
+print("\n7. Election Winner")
+
+voting.get_winner()
+
+# Display Blockchain
+print("\n8. Blockchain Records")
+
+voting.display_blockchain()
+
+# Validate Blockchain
+print("\n9. Blockchain Validation")
+
+print("Is Blockchain Valid?",
+      voting.validate_blockchain())
+
+print("\nDecentralized Voting Simulation Completed.")

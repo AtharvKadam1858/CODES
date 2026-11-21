@@ -1,0 +1,113 @@
+BCT EXP 3 COLAB
+
+
+# ============================================================
+# Experiment No. 3
+# Title: Simulation of Proof-of-Work (PoW) and Proof-of-Stake (PoS) Algorithms
+
+import hashlib
+import random
+import time
+
+# ============================================================
+# PART 1 : Proof-of-Work (PoW)
+# ============================================================
+
+print("=" * 65)
+print("PROOF OF WORK (PoW) SIMULATION")
+print("=" * 65)
+
+
+def proof_of_work(data, difficulty):
+    """
+    Simulates Proof-of-Work by finding a hash
+    with a specified number of leading zeros.
+    """
+    nonce = 0
+    target = "0" * difficulty
+
+    while True:
+        block_data = f"{data}{nonce}"
+
+        hash_result = hashlib.sha256(block_data.encode()).hexdigest()
+
+        if hash_result.startswith(target):
+            return nonce, hash_result
+
+        nonce += 1
+
+# Block Data
+data = "Block #1 : Transaction Data"
+# Difficulty Level
+difficulty = 4
+
+print(f"\nBlock Data : {data}")
+print(f"Difficulty : {difficulty} leading zeros")
+
+print("\nMining Block... Please Wait.\n")
+
+start_time = time.time()
+
+nonce, valid_hash = proof_of_work(data, difficulty)
+
+end_time = time.time()
+
+print("Mining Successful!")
+print("-" * 50)
+print(f"Nonce Found    : {nonce}")
+print(f"Valid Hash     : {valid_hash}")
+print(f"Time Taken     : {end_time - start_time:.4f} seconds")
+
+
+# ============================================================
+# PART 2 : Proof-of-Stake (PoS)
+# ============================================================
+print("\n\n" + "=" * 65)
+print("PROOF OF STAKE (PoS) SIMULATION")
+print("=" * 65)
+
+
+def proof_of_stake(validators):
+    """
+    Selects a validator based on stake.
+    Higher stake increases the probability
+    of being selected.
+    """
+
+    total_stake = sum(validators.values())
+
+    chosen_stake = random.randint(1, total_stake)
+
+    cumulative = 0
+
+    for validator, stake in validators.items():
+
+        cumulative += stake
+
+        if cumulative >= chosen_stake:
+            return validator
+
+# Validators and Stakes
+validators = {
+    "Validator_A": 50,
+    "Validator_B": 30,
+    "Validator_C": 20
+}
+
+print("\nValidators and Stakes\n")
+
+for validator, stake in validators.items():
+    print(f"{validator:15} -> {stake} Coins")
+
+chosen_validator = proof_of_stake(validators)
+
+print("\nSelected Validator")
+print("-" * 50)
+print(chosen_validator)
+
+# ============================================================
+# End of Program
+# ============================================================
+print("=" * 65)
+print("Experiment Completed Successfully.")
+print("=" * 65)

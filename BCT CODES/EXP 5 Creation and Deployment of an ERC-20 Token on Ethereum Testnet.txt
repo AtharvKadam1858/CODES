@@ -1,0 +1,208 @@
+BCT EXP 5  COLAB 
+
+# ============================================================
+# Experiment No. 5
+# Title: ERC-20 Token Simulation using Python
+#
+# Aim:
+# To simulate creation and management of an ERC-20 token.
+# ============================================================
+
+
+print("="*60)
+print("ERC-20 TOKEN SIMULATION")
+print("="*60)
+
+
+class ERC20Token:
+
+    def __init__(self, name, symbol, supply, owner):
+
+        self.name = name
+        self.symbol = symbol
+        self.total_supply = supply
+
+        self.balances = {
+            owner: supply
+        }
+
+        self.allowances = {}
+
+        print("\nToken Created Successfully")
+        print("Name :", self.name)
+        print("Symbol :", self.symbol)
+        print("Total Supply :", self.total_supply)
+
+
+    def balanceOf(self, address):
+
+        return self.balances.get(address, 0)
+
+
+    def transfer(self, sender, receiver, amount):
+
+        if self.balanceOf(sender) >= amount:
+
+            self.balances[sender] -= amount
+
+            self.balances[receiver] = (
+                self.balanceOf(receiver) + amount
+            )
+
+            print("\nTransfer Successful")
+
+        else:
+
+            print("\nInsufficient Balance")
+
+
+    def approve(self, owner, spender, amount):
+
+        self.allowances[(owner, spender)] = amount
+
+        print("\nApproval Successful")
+
+
+    def allowance(self, owner, spender):
+
+        return self.allowances.get(
+            (owner, spender),
+            0
+        )
+
+
+    def transferFrom(self, spender, owner, receiver, amount):
+
+        allowed = self.allowance(owner, spender)
+
+        if allowed >= amount and self.balanceOf(owner) >= amount:
+
+            self.balances[owner] -= amount
+
+            self.balances[receiver] = (
+                self.balanceOf(receiver) + amount
+            )
+
+            self.allowances[(owner, spender)] -= amount
+
+            print("\nTransferFrom Successful")
+
+        else:
+
+            print("\nTransfer Failed")
+
+
+
+# ============================================================
+# Token Deployment
+# ============================================================
+
+owner = "Alice"
+
+token = ERC20Token(
+    "MyToken",
+    "MTK",
+    1000,
+    owner
+)
+
+
+# ============================================================
+# Balance Check
+# ============================================================
+
+print("\nOwner Balance:")
+
+print(
+    token.balanceOf("Alice"),
+    "MTK"
+)
+
+
+# ============================================================
+# Transfer Token
+# ============================================================
+
+token.transfer(
+    "Alice",
+    "Bob",
+    100
+)
+
+
+print("\nAlice Balance:",
+      token.balanceOf("Alice"))
+
+print("Bob Balance:",
+      token.balanceOf("Bob"))
+
+
+
+# ============================================================
+# Approve and TransferFrom
+# ============================================================
+
+token.approve(
+    "Alice",
+    "Charlie",
+    50
+)
+
+
+print("\nAllowance:")
+
+print(
+    token.allowance(
+        "Alice",
+        "Charlie"
+    )
+)
+
+
+token.transferFrom(
+    "Charlie",
+    "Alice",
+    "David",
+    50
+)
+
+
+print("\nDavid Balance:")
+
+print(
+    token.balanceOf("David"),
+    "MTK"
+)
+
+
+print("\n"+"="*60)
+print("Experiment Completed Successfully")
+print("="*60)
+
+
+
+
+SOLIDITY
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+// ============================================================
+// Experiment No. 5
+// Title: Creation and Deployment of an ERC-20 Token
+// on Ethereum Testnet
+// Aim:
+// To create and deploy an ERC-20 token using Solidity.
+// ============================================================
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+
+contract MyToken is ERC20 {
+
+    constructor(uint256 initialSupply)
+        ERC20("College Token", "CLT")
+    {
+        _mint(msg.sender, initialSupply * 10 ** decimals());
+    }
+
+}

@@ -1,0 +1,327 @@
+BCT EXP 6 COLAB
+
+# ============================================================
+# Experiment No. 6
+# Title: Building a Decentralized Application (dApp)
+# Aim:
+# To develop a simple decentralized application using
+# Python to simulate wallet connection and blockchain
+# transactions.
+# ============================================================
+
+import hashlib
+import datetime
+
+
+# -----------------------------
+# Blockchain Transaction
+# -----------------------------
+class Transaction:
+
+    def __init__(self, sender, receiver, amount):
+
+        self.sender = sender
+        self.receiver = receiver
+        self.amount = amount
+
+        self.timestamp = str(datetime.datetime.now())
+
+        data = (
+            sender + receiver
+            + str(amount) + self.timestamp
+        )
+
+        self.transaction_hash = hashlib.sha256(
+            data.encode()
+        ).hexdigest()
+
+
+# -----------------------------
+# dApp Class
+# -----------------------------
+class DecentralizedApp:
+
+    def __init__(self):
+
+        self.accounts = {
+            "Wallet_A": 100,
+            "Wallet_B": 50,
+            "Wallet_C": 75
+        }
+
+        self.transactions = []
+
+        print("dApp Initialized Successfully!")
+
+
+    # Connect Wallet
+    def connect_wallet(self, wallet):
+
+        if wallet in self.accounts:
+
+            print("\nWallet Connected Successfully!")
+            print("Wallet Address:", wallet)
+            print("Balance:", self.accounts[wallet])
+
+            return True
+
+        else:
+
+            print("Wallet Not Found!")
+            return False
+
+
+    # Send Transaction
+    def send_transaction(self, sender, receiver, amount):
+
+        if sender not in self.accounts:
+            print("Sender Wallet Not Found!")
+            return
+
+        if receiver not in self.accounts:
+            print("Receiver Wallet Not Found!")
+            return
+
+        if amount <= 0:
+            print("Invalid Transaction Amount!")
+            return
+
+        if self.accounts[sender] < amount:
+            print("Insufficient Balance!")
+            return
+
+        self.accounts[sender] -= amount
+        self.accounts[receiver] += amount
+
+        transaction = Transaction(
+            sender, receiver, amount
+        )
+
+        self.transactions.append(transaction)
+
+        print("\nTransaction Successful!")
+        print("Transaction Hash:", transaction.transaction_hash)
+
+
+    # Display Transactions
+    def display_transactions(self):
+
+        print("\n--- TRANSACTION HISTORY ---")
+
+        for transaction in self.transactions:
+
+            print("\nSender   :", transaction.sender)
+            print("Receiver :", transaction.receiver)
+            print("Amount   :", transaction.amount)
+            print("Hash     :", transaction.transaction_hash)
+
+
+    # Display Wallet Balances
+    def display_balances(self):
+
+        print("\n--- WALLET BALANCES ---")
+
+        for wallet, balance in self.accounts.items():
+
+            print(wallet, ":", balance)
+
+
+# -----------------------------
+# Main Program
+# -----------------------------
+print("=" * 60)
+print(" DECENTRALIZED APPLICATION SIMULATION ")
+print("=" * 60)
+
+dapp = DecentralizedApp()
+
+# Connect wallet
+print("\n1. Connecting Wallet")
+
+dapp.connect_wallet("Wallet_A")
+
+# Perform transaction
+print("\n2. Sending Transaction")
+
+dapp.send_transaction(
+    "Wallet_A",
+    "Wallet_B",
+    20
+)
+
+# Perform another transaction
+print("\n3. Sending Another Transaction")
+
+dapp.send_transaction(
+    "Wallet_B",
+    "Wallet_C",
+    10
+)
+
+# Display transaction history
+print("\n4. Transaction History")
+
+dapp.display_transactions()
+
+# Display balances
+print("\n5. Final Wallet Balances")
+
+dapp.display_balances()
+
+print("\ndApp Simulation Completed Successfully.")
+
+
+
+WEB APP 
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Blockchain dApp</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@4.16.0/dist/web3.min.js"></script>
+</head>
+
+<body>
+
+<h2>Decentralized Application (dApp)</h2>
+
+<button onclick="connectWallet()">Connect Wallet</button>
+
+<p id="account">Wallet: Not Connected</p>
+
+<hr>
+
+<h3>Smart Contract Interaction</h3>
+
+<input type="number" id="value" placeholder="Enter a number">
+
+<button onclick="setValue()">Store Value</button>
+
+<button onclick="getValue()">Get Value</button>
+
+<p id="result">Result will appear here</p>
+
+<script>
+
+let web3;
+let contract;
+
+const contractAddress = "YOUR_DEPLOYED_CONTRACT_ADDRESS";
+
+const abi = [
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_value",
+                "type": "uint256"
+            }
+        ],
+        "name": "set",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "get",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+];
+
+
+// Connect Wallet
+async function connectWallet() {
+
+    if (typeof window.ethereum === "undefined") {
+        alert("Please install MetaMask!");
+        return;
+    }
+
+    try {
+
+        const accounts = await window.ethereum.request({
+            method: "eth_requestAccounts"
+        });
+
+        web3 = new Web3(window.ethereum);
+
+        contract = new web3.eth.Contract(
+            abi,
+            contractAddress
+        );
+
+        document.getElementById("account").innerHTML =
+            "Wallet: " + accounts[0];
+
+    } catch (error) {
+
+        alert(error.message);
+
+    }
+}
+
+
+// Store Value
+async function setValue() {
+
+    if (!contract) {
+        alert("Connect wallet first!");
+        return;
+    }
+
+    try {
+
+        const accounts = await web3.eth.getAccounts();
+
+        const value = document.getElementById("value").value;
+
+        await contract.methods.set(value).send({
+            from: accounts[0]
+        });
+
+        alert("Value stored successfully!");
+
+    } catch (error) {
+
+        alert(error.message);
+
+    }
+}
+
+
+// Get Value
+async function getValue() {
+
+    if (!contract) {
+        alert("Connect wallet first!");
+        return;
+    }
+
+    try {
+
+        const result = await contract.methods.get().call();
+
+        document.getElementById("result").innerHTML =
+            "Stored Value: " + result;
+
+    } catch (error) {
+
+        alert(error.message);
+
+    }
+}
+
+</script>
+
+</body>
+</html>

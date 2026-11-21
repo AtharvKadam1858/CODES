@@ -1,0 +1,262 @@
+BCT EXP 7 SOLIDITY
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+// ============================================================
+// Experiment No. 7
+// Title: Security Analysis of Smart Contracts
+// Aim:
+// To detect and prevent reentrancy attacks in smart contracts.
+// ============================================================
+
+
+// -----------------------------
+// Vulnerable Smart Contract
+// -----------------------------
+contract VulnerableBank {
+
+    mapping(address => uint256) public balances;
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw() public {
+
+        uint256 amount = balances[msg.sender];
+
+        require(amount > 0, "Insufficient balance");
+
+        // Vulnerable external call
+        (bool success, ) = msg.sender.call{value: amount}("");
+
+        require(success, "Transfer failed");
+
+        // Balance updated after external call
+        balances[msg.sender] = 0;
+    }
+}
+
+
+// -----------------------------
+// Secure Smart Contract
+// -----------------------------
+contract SecureBank {
+
+    mapping(address => uint256) public balances;
+
+    bool private locked;
+
+    modifier nonReentrant() {
+
+        require(!locked, "Reentrancy detected");
+
+        locked = true;
+
+        _;
+
+        locked = false;
+    }
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw() public nonReentrant {
+
+        uint256 amount = balances[msg.sender];
+
+        require(amount > 0, "Insufficient balance");
+
+        // Update balance before external call
+        balances[msg.sender] = 0;
+
+        (bool success, ) = msg.sender.call{value: amount}("");
+
+        require(success, "Transfer failed");
+    }
+}
+
+
+COLAB
+
+# ============================================================
+# Experiment No. 7
+# Title: Security Analysis of Smart Contracts
+# (Detecting and Preventing Reentrancy Attacks)
+# Aim:
+# To understand reentrancy attacks and demonstrate their
+# prevention using a secure smart contract simulation.
+# ============================================================
+
+
+# -----------------------------
+# Vulnerable Bank Class
+# -----------------------------
+class VulnerableBank:
+
+    def __init__(self):
+
+        self.balances = {}
+        self.balance = 1000
+
+    def deposit(self, user, amount):
+
+        self.balances[user] = (
+            self.balances.get(user, 0) + amount
+        )
+
+        self.balance += amount
+
+    def withdraw(self, user, attack=None):
+
+        amount = self.balances.get(user, 0)
+
+        if amount <= 0:
+            return
+
+        # Vulnerable external call before updating balance
+        if attack:
+            attack.receive(amount)
+
+        self.balance -= amount
+
+        self.balances[user] = 0
+
+        print("Withdrawal Completed:", amount)
+
+
+# -----------------------------
+# Secure Bank Class
+# -----------------------------
+class SecureBank:
+
+    def __init__(self):
+
+        self.balances = {}
+        self.balance = 1000
+        self.locked = False
+
+    def deposit(self, user, amount):
+
+        self.balances[user] = (
+            self.balances.get(user, 0) + amount
+        )
+
+        self.balance += amount
+
+    def withdraw(self, user, attack=None):
+
+        if self.locked:
+            print("Reentrancy Attack Prevented!")
+            return
+
+        amount = self.balances.get(user, 0)
+
+        if amount <= 0:
+            print("Insufficient Balance!")
+            return
+
+        # Update balance before external call
+        self.balances[user] = 0
+
+        self.locked = True
+
+        if attack:
+            attack.receive(amount)
+
+        self.balance -= amount
+
+        self.locked = False
+
+        print("Secure Withdrawal Completed:", amount)
+
+
+# -----------------------------
+# Attacker Class
+# -----------------------------
+class Attacker:
+
+    def __init__(self, bank):
+
+        self.bank = bank
+        self.received = 0
+        self.attack_count = 0
+
+    def attack(self):
+
+        self.bank.deposit("Attacker", 100)
+
+        print("\nAttacker Deposited: 100")
+
+        self.bank.withdraw("Attacker", self)
+
+    def receive(self, amount):
+
+        self.received += amount
+        self.attack_count += 1
+
+        print("Attacker Received:", amount)
+
+        # Attempt repeated withdrawal
+        if self.attack_count < 3:
+
+            print("Attacker Trying Re-entry...")
+
+            self.bank.withdraw("Attacker", self)
+
+
+# -----------------------------
+# Main Program
+# -----------------------------
+print("=" * 60)
+print(" REENTRANCY ATTACK SIMULATION ")
+print("=" * 60)
+
+
+# Vulnerable Contract Demonstration
+print("\n1. VULNERABLE BANK")
+
+vulnerable_bank = VulnerableBank()
+
+attacker1 = Attacker(vulnerable_bank)
+
+attacker1.attack()
+
+print("\nTotal Amount Received by Attacker:",
+      attacker1.received)
+
+print("Remaining Bank Balance:",
+      vulnerable_bank.balance)
+
+
+# Secure Contract Demonstration
+print("\n" + "=" * 60)
+print("2. SECURE BANK")
+print("=" * 60)
+
+secure_bank = SecureBank()
+
+attacker2 = Attacker(secure_bank)
+
+attacker2.attack()
+
+print("\nTotal Amount Received by Attacker:",
+      attacker2.received)
+
+print("Remaining Bank Balance:",
+      secure_bank.balance)
+
+
+# Comparison
+print("\n--- SECURITY ANALYSIS ---")
+
+print("Vulnerable Bank:")
+print("Repeated withdrawals are possible.")
+
+print("\nSecure Bank:")
+print("Balance is updated before external calls.")
+print("Reentrancy protection prevents repeated withdrawals.")
+
+print("\nReentrancy Simulation Completed.")

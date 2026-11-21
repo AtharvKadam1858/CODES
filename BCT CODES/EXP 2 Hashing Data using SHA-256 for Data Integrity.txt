@@ -1,0 +1,272 @@
+BCT EXP 2 COLAB
+
+
+
+# ============================================================
+# Experiment No. 2
+# Title: Hashing Data using MD5, SHA-1, SHA-224,
+#        SHA-256, SHA-384 and SHA-512
+#
+# Aim:
+# To implement different hashing algorithms and
+# compare their outputs for data integrity verification.
+# ============================================================
+
+import hashlib
+
+
+# ============================================================
+# Function to Generate Hash
+# ============================================================
+
+def generate_hash(data, algorithm):
+
+    if algorithm == "MD5":
+        return hashlib.md5(data.encode()).hexdigest()
+
+    elif algorithm == "SHA1":
+        return hashlib.sha1(data.encode()).hexdigest()
+
+    elif algorithm == "SHA224":
+        return hashlib.sha224(data.encode()).hexdigest()
+
+    elif algorithm == "SHA256":
+        return hashlib.sha256(data.encode()).hexdigest()
+
+    elif algorithm == "SHA384":
+        return hashlib.sha384(data.encode()).hexdigest()
+
+    elif algorithm == "SHA512":
+        return hashlib.sha512(data.encode()).hexdigest()
+
+
+# ============================================================
+# Algorithms List
+# ============================================================
+
+algorithms = {
+    "MD5": 32,
+    "SHA1": 40,
+    "SHA224": 56,
+    "SHA256": 64,
+    "SHA384": 96,
+    "SHA512": 128
+}
+
+
+# ============================================================
+# Original Data
+# ============================================================
+
+original_data = "DataIntegrity123"
+
+print("=" * 80)
+print("HASHING ALGORITHMS FOR DATA INTEGRITY")
+print("=" * 80)
+
+print("\nOriginal Data :", original_data)
+
+print("\nGenerated Hashes")
+print("-" * 80)
+
+for algo, length in algorithms.items():
+
+    h = generate_hash(original_data, algo)
+
+    print(f"\n{algo} ({length} Characters)")
+    print(h)
+
+
+# ============================================================
+# Modified Data
+# ============================================================
+
+modified_data = "DataIntegrity124"
+
+print("\n" + "=" * 80)
+print("AFTER MODIFYING THE DATA")
+print("=" * 80)
+
+print("\nModified Data :", modified_data)
+
+print("\nGenerated Hashes")
+print("-" * 80)
+
+for algo, length in algorithms.items():
+
+    h = generate_hash(modified_data, algo)
+
+    print(f"\n{algo} ({length} Characters)")
+    print(h)
+
+
+# ============================================================
+# Hash Comparison
+# ============================================================
+
+print("\n" + "=" * 80)
+print("HASH COMPARISON")
+print("=" * 80)
+
+for algo in algorithms:
+
+    original_hash = generate_hash(original_data, algo)
+    modified_hash = generate_hash(modified_data, algo)
+
+    print(f"\n{algo}")
+
+    if original_hash == modified_hash:
+        print("Status : SAME HASH")
+    else:
+        print("Status : DIFFERENT HASH")
+        print("Reason : One character change completely changes the hash.")
+        print("Avalanche Effect Demonstrated.")
+
+
+# ============================================================
+# Difference Between Algorithms
+# ============================================================
+
+print("\n" + "=" * 80)
+print("DIFFERENCE BETWEEN HASHING ALGORITHMS")
+print("=" * 80)
+
+print("{:<10}{:<15}{:<18}{:<35}".format(
+    "Algorithm",
+    "Characters",
+    "Digest Size",
+    "Security"
+))
+
+print("-" * 80)
+
+print("{:<10}{:<15}{:<18}{:<35}".format(
+    "MD5",
+    "32",
+    "128 bits",
+    "Very Weak (Not Recommended)"
+))
+
+print("{:<10}{:<15}{:<18}{:<35}".format(
+    "SHA-1",
+    "40",
+    "160 bits",
+    "Weak (Deprecated)"
+))
+
+print("{:<10}{:<15}{:<18}{:<35}".format(
+    "SHA-224",
+    "56",
+    "224 bits",
+    "Secure"
+))
+
+print("{:<10}{:<15}{:<18}{:<35}".format(
+    "SHA-256",
+    "64",
+    "256 bits",
+    "Highly Secure (Blockchain)"
+))
+
+print("{:<10}{:<15}{:<18}{:<35}".format(
+    "SHA-384",
+    "96",
+    "384 bits",
+    "Very Strong"
+))
+
+print("{:<10}{:<15}{:<18}{:<35}".format(
+    "SHA-512",
+    "128",
+    "512 bits",
+    "Extremely Strong"
+))
+
+
+# ============================================================
+# User Input
+# ============================================================
+
+print("\n" + "=" * 80)
+print("GENERATE HASHES FOR YOUR OWN DATA")
+print("=" * 80)
+
+user_data = input("\nEnter any text : ")
+
+user_hashes = {}
+
+for algo, length in algorithms.items():
+
+    h = generate_hash(user_data, algo)
+
+    user_hashes[algo] = h
+
+    print(f"\n{algo} ({length} Characters)")
+    print(h)
+
+
+# ============================================================
+# Verify Data Integrity
+# ============================================================
+
+print("\n" + "=" * 80)
+print("VERIFY DATA INTEGRITY")
+print("=" * 80)
+
+verify = input("\nEnter the same text again : ")
+
+print()
+
+for algo in algorithms:
+
+    verify_hash = generate_hash(verify, algo)
+
+    if verify_hash == user_hashes[algo]:
+
+        print(f"{algo:<8} : VERIFIED")
+
+    else:
+
+        print(f"{algo:<8} : DATA MODIFIED")
+
+
+# ============================================================
+# Observation
+# ============================================================
+
+print("\n" + "=" * 80)
+print("OBSERVATION")
+print("=" * 80)
+
+print("""
+1. MD5 generates a 32-character hash.
+2. SHA-1 generates a 40-character hash.
+3. SHA-224 generates a 56-character hash.
+4. SHA-256 generates a 64-character hash.
+5. SHA-384 generates a 96-character hash.
+6. SHA-512 generates a 128-character hash.
+7. Even a one-character change produces a completely different hash.
+8. SHA-256 is widely used in blockchain technology.
+9. MD5 and SHA-1 are no longer recommended for secure applications.
+""")
+
+
+# ============================================================
+# Conclusion
+# ============================================================
+
+print("=" * 80)
+print("CONCLUSION")
+print("=" * 80)
+
+print("""
+Different hashing algorithms produce hashes of different lengths and
+security levels. A small change in the input results in a completely
+different hash (Avalanche Effect). SHA-256, SHA-384 and SHA-512 are
+more secure than MD5 and SHA-1, making them suitable for modern
+cryptography and blockchain applications.
+""")
+
+print("=" * 80)
+print("Experiment Completed Successfully.")
+print("=" * 80)

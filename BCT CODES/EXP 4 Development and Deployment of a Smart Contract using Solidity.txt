@@ -1,0 +1,152 @@
+BCT EXP 4 SOLIDITY
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+// ============================================================
+// Experiment No. 4
+// Title: Development and Deployment of a Smart Contract
+// using Solidity
+// Aim:
+// To develop and deploy a simple smart contract on Ethereum.
+// ============================================================
+
+contract SimpleStorage {
+
+    uint256 private storedData;
+
+    // Store a value
+    function set(uint256 _value) public {
+        storedData = _value;
+    }
+
+    // Retrieve stored value
+    function get() public view returns (uint256) {
+        return storedData;
+    }
+
+    // Increase stored value
+    function increment() public {
+        storedData++;
+    }
+
+    // Decrease stored value
+    function decrement() public {
+        require(storedData > 0, "Value cannot be negative");
+        storedData--;
+    }
+}
+
+
+COLAB
+
+# ============================================================
+# Experiment No. 4
+# Title: Development and Deployment of a Smart Contract
+# using Solidity
+# Aim:
+# To understand smart contract operations through a Python
+# simulation of a simple storage smart contract.
+# ============================================================
+
+import hashlib
+import datetime
+
+
+# -----------------------------
+# Smart Contract Simulation
+# -----------------------------
+class SimpleStorage:
+
+    def __init__(self):
+
+        self.stored_data = 0
+        self.owner = "Admin"
+        self.deployed = True
+
+        print("Smart Contract Deployed Successfully!")
+
+
+    # Store a value
+    def set(self, value, sender):
+
+        if sender != self.owner:
+            print("Access Denied! Only owner can store data.")
+            return
+
+        self.stored_data = value
+        print("Value Stored Successfully:", value)
+
+
+    # Retrieve a value
+    def get(self):
+
+        print("Stored Value:", self.stored_data)
+        return self.stored_data
+
+
+    # Increment value
+    def increment(self, sender):
+
+        if sender != self.owner:
+            print("Access Denied!")
+            return
+
+        self.stored_data += 1
+        print("Value After Increment:", self.stored_data)
+
+
+    # Decrement value
+    def decrement(self, sender):
+
+        if sender != self.owner:
+            print("Access Denied!")
+            return
+
+        if self.stored_data > 0:
+            self.stored_data -= 1
+            print("Value After Decrement:", self.stored_data)
+        else:
+            print("Value Cannot Be Negative!")
+
+
+# -----------------------------
+# Main Program
+# -----------------------------
+print("=" * 60)
+print(" SMART CONTRACT SIMULATION ")
+print("=" * 60)
+
+contract = SimpleStorage()
+
+print("\nContract Address:",
+      hashlib.sha256(b"SimpleStorage").hexdigest()[:40])
+
+print("Contract Owner:", contract.owner)
+print("Deployment Status:", "Successful")
+
+# Store data
+print("\n1. Storing Data")
+contract.set(100, "Admin")
+
+# Retrieve data
+print("\n2. Retrieving Data")
+contract.get()
+
+# Increment
+print("\n3. Incrementing Value")
+contract.increment("Admin")
+
+# Decrement
+print("\n4. Decrementing Value")
+contract.decrement("Admin")
+
+# Unauthorized access
+print("\n5. Testing Unauthorized Access")
+contract.set(500, "User")
+
+# Final value
+print("\n6. Final Stored Value")
+contract.get()
+
+print("\nSmart Contract Simulation Completed.")

@@ -1,0 +1,170 @@
+BCT EXP 8 COLAB
+
+# ============================================================
+# Experiment No. 8
+# Title: Development of a Blockchain-Based Supply Chain
+# Traceability System
+# Aim:
+# To develop a blockchain-based system to track products
+# through different stages of the supply chain.
+# ============================================================
+
+import hashlib
+import datetime
+import json
+
+
+# -----------------------------
+# Product Block Class
+# -----------------------------
+class ProductBlock:
+
+    def __init__(self, index, product_id, stage,
+                 location, previous_hash):
+
+        self.index = index
+        self.timestamp = str(datetime.datetime.now())
+        self.product_id = product_id
+        self.stage = stage
+        self.location = location
+        self.previous_hash = previous_hash
+
+        self.hash = self.calculate_hash()
+
+    def calculate_hash(self):
+
+        data = (
+            str(self.index)
+            + self.timestamp
+            + self.product_id
+            + self.stage
+            + self.location
+            + self.previous_hash
+        )
+
+        return hashlib.sha256(data.encode()).hexdigest()
+
+
+# -----------------------------
+# Supply Chain Blockchain
+# -----------------------------
+class SupplyChain:
+
+    def __init__(self):
+
+        self.chain = []
+
+    def add_product_stage(self, product_id, stage, location):
+
+        if len(self.chain) == 0:
+            previous_hash = "0"
+        else:
+            previous_hash = self.chain[-1].hash
+
+        block = ProductBlock(
+            len(self.chain),
+            product_id,
+            stage,
+            location,
+            previous_hash
+        )
+
+        self.chain.append(block)
+
+        print("\nProduct Stage Added Successfully!")
+
+
+    def display_chain(self):
+
+        print("\n--- SUPPLY CHAIN DETAILS ---")
+
+        for block in self.chain:
+
+            print("\n-----------------------------")
+            print("Block Index   :", block.index)
+            print("Product ID    :", block.product_id)
+            print("Stage         :", block.stage)
+            print("Location      :", block.location)
+            print("Timestamp    :", block.timestamp)
+            print("Previous Hash :", block.previous_hash)
+            print("Current Hash  :", block.hash)
+
+
+    def verify_chain(self):
+
+        for i in range(len(self.chain)):
+
+            current = self.chain[i]
+
+            if current.hash != current.calculate_hash():
+                return False
+
+            if i > 0:
+
+                previous = self.chain[i - 1]
+
+                if current.previous_hash != previous.hash:
+                    return False
+
+        return True
+
+
+    def track_product(self, product_id):
+
+        print("\n--- PRODUCT TRACKING ---")
+
+        found = False
+
+        for block in self.chain:
+
+            if block.product_id == product_id:
+
+                found = True
+
+                print("\nStage    :", block.stage)
+                print("Location :", block.location)
+                print("Time     :", block.timestamp)
+
+        if not found:
+            print("Product Not Found!")
+
+
+# -----------------------------
+# Main Program
+# -----------------------------
+print("=" * 60)
+print(" BLOCKCHAIN SUPPLY CHAIN TRACEABILITY SYSTEM ")
+print("=" * 60)
+
+supply_chain = SupplyChain()
+
+# Add supply chain stages
+supply_chain.add_product_stage(
+    "P101", "Manufacturing", "Factory"
+)
+
+supply_chain.add_product_stage(
+    "P101", "Packaging", "Warehouse"
+)
+
+supply_chain.add_product_stage(
+    "P101", "Transportation", "Distribution Center"
+)
+
+supply_chain.add_product_stage(
+    "P101", "Delivered", "Customer"
+)
+
+# Display blockchain
+supply_chain.display_chain()
+
+# Track product
+supply_chain.track_product("P101")
+
+# Verify blockchain
+print("\n--- BLOCKCHAIN VALIDATION ---")
+
+print("Is Blockchain Valid?",
+      supply_chain.verify_chain())
+
+print("\nSupply Chain Simulation Completed.")

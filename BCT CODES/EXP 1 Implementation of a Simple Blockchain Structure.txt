@@ -1,0 +1,129 @@
+BCT EXP 1 COLAB
+
+# ============================================================
+# Experiment No. 1
+# Title: Implementation of a Simple Blockchain Structure
+# Aim:
+# To implement a basic blockchain structure in Python that
+# demonstrates block creation, cryptographic hashing,
+# and linking of blocks to form a secure blockchain.
+# ============================================================
+
+import hashlib
+import datetime
+
+
+# -----------------------------
+# Block Class
+# -----------------------------
+class Block:
+    def __init__(self, index, data, previous_hash):
+        self.index = index
+        self.timestamp = str(datetime.datetime.now())
+        self.data = data
+        self.previous_hash = previous_hash
+        self.hash = self.calculate_hash()
+
+    # Function to calculate SHA-256 hash
+    def calculate_hash(self):
+        value = (
+            str(self.index)
+            + self.timestamp
+            + self.data
+            + self.previous_hash
+        )
+        return hashlib.sha256(value.encode()).hexdigest()
+
+
+# -----------------------------
+# Blockchain Class
+# -----------------------------
+class Blockchain:
+    def __init__(self):
+        self.chain = [self.create_genesis_block()]
+
+    # Create first block
+    def create_genesis_block(self):
+        return Block(0, "Genesis Block", "0")
+
+    # Return last block
+    def get_last_block(self):
+        return self.chain[-1]
+
+    # Add new block
+    def add_block(self, data):
+        previous_block = self.get_last_block()
+        new_block = Block(
+            len(self.chain),
+            data,
+            previous_block.hash
+        )
+        self.chain.append(new_block)
+
+    # Validate blockchain
+    def is_chain_valid(self):
+        for i in range(1, len(self.chain)):
+            current = self.chain[i]
+            previous = self.chain[i - 1]
+
+            # Check current block hash
+            if current.hash != current.calculate_hash():
+                return False
+
+            # Check previous hash link
+            if current.previous_hash != previous.hash:
+                return False
+
+        return True
+
+
+# -----------------------------
+# Main Program
+# -----------------------------
+print("=" * 60)
+print(" SIMPLE BLOCKCHAIN IMPLEMENTATION ")
+print("=" * 60)
+
+# Create blockchain
+my_blockchain = Blockchain()
+
+# Add blocks
+my_blockchain.add_block("Transaction Data for Block 1")
+my_blockchain.add_block("Transaction Data for Block 2")
+my_blockchain.add_block("Transaction Data for Block 3")
+
+# Display blockchain
+print("\nBlockchain Contents:\n")
+
+for block in my_blockchain.chain:
+    print("-" * 60)
+    print(f"Block Index     : {block.index}")
+    print(f"Timestamp       : {block.timestamp}")
+    print(f"Data            : {block.data}")
+    print(f"Previous Hash   : {block.previous_hash}")
+    print(f"Current Hash    : {block.hash}")
+
+print("-" * 60)
+
+# Validate blockchain
+print("\nBlockchain Validation")
+print("----------------------")
+print("Is Blockchain Valid?", my_blockchain.is_chain_valid())
+
+
+# ---------------------------------------------------------
+# Demonstration of Tampering
+# ---------------------------------------------------------
+print("\nTampering with Block 1...\n")
+
+# Modify block data
+my_blockchain.chain[1].data = "Hacked Transaction"
+
+# Check blockchain again
+print("Is Blockchain Valid After Tampering?")
+print(my_blockchain.is_chain_valid())
+
+print("\nReason:")
+print("Changing block data changes its hash.")
+print("Since the stored hash no longer matches the calculated hash,")
+print("the blockchain becomes invalid.")

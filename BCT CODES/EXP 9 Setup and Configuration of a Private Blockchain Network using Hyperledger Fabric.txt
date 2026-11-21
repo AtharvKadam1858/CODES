@@ -1,0 +1,210 @@
+BCT EXP 9 COLAB
+
+# ============================================================
+# Experiment No. 9
+# Title: Setup and Configuration of a Private Blockchain
+# Network using Hyperledger Fabric
+# Aim:
+# To simulate a private blockchain network with organizations,
+# peers and transaction management using Python.
+# ============================================================
+
+import hashlib
+import datetime
+
+
+# -----------------------------
+# Organization Class
+# -----------------------------
+class Organization:
+
+    def __init__(self, name):
+
+        self.name = name
+        self.peers = []
+
+    def add_peer(self, peer_name):
+
+        self.peers.append(peer_name)
+
+        print("Peer Added:", peer_name)
+
+
+# -----------------------------
+# Block Class
+# -----------------------------
+class Block:
+
+    def __init__(self, index, transaction, previous_hash):
+
+        self.index = index
+        self.timestamp = str(datetime.datetime.now())
+        self.transaction = transaction
+        self.previous_hash = previous_hash
+
+        self.hash = self.calculate_hash()
+
+    def calculate_hash(self):
+
+        data = (
+            str(self.index)
+            + self.timestamp
+            + self.transaction
+            + self.previous_hash
+        )
+
+        return hashlib.sha256(data.encode()).hexdigest()
+
+
+# -----------------------------
+# Private Blockchain Network
+# -----------------------------
+class PrivateBlockchain:
+
+    def __init__(self):
+
+        self.organizations = []
+        self.chain = []
+
+        self.active = False
+
+    def add_organization(self, organization):
+
+        self.organizations.append(organization)
+
+        print("\nOrganization Added:",
+              organization.name)
+
+    def start_network(self):
+
+        self.active = True
+
+        print("\nPrivate Blockchain Network Started!")
+
+    def stop_network(self):
+
+        self.active = False
+
+        print("\nPrivate Blockchain Network Stopped!")
+
+    def add_transaction(self, transaction):
+
+        if not self.active:
+
+            print("Network is not active!")
+            return
+
+        if len(self.chain) == 0:
+            previous_hash = "0"
+        else:
+            previous_hash = self.chain[-1].hash
+
+        block = Block(
+            len(self.chain),
+            transaction,
+            previous_hash
+        )
+
+        self.chain.append(block)
+
+        print("\nTransaction Added Successfully!")
+
+    def display_ledger(self):
+
+        print("\n--- PRIVATE BLOCKCHAIN LEDGER ---")
+
+        for block in self.chain:
+
+            print("\n" + "-" * 50)
+
+            print("Block Index   :", block.index)
+            print("Transaction   :", block.transaction)
+            print("Timestamp     :", block.timestamp)
+            print("Previous Hash :", block.previous_hash)
+            print("Current Hash  :", block.hash)
+
+    def verify_network(self):
+
+        for i in range(len(self.chain)):
+
+            current = self.chain[i]
+
+            if current.hash != current.calculate_hash():
+                return False
+
+            if i > 0:
+
+                previous = self.chain[i - 1]
+
+                if current.previous_hash != previous.hash:
+                    return False
+
+        return True
+
+
+# -----------------------------
+# Main Program
+# -----------------------------
+print("=" * 60)
+print(" HYPERLEDGER FABRIC PRIVATE NETWORK SIMULATION ")
+print("=" * 60)
+
+network = PrivateBlockchain()
+
+# Create organizations
+org1 = Organization("Organization A")
+org2 = Organization("Organization B")
+
+# Add peers
+org1.add_peer("Peer0.OrgA")
+org1.add_peer("Peer1.OrgA")
+
+org2.add_peer("Peer0.OrgB")
+org2.add_peer("Peer1.OrgB")
+
+# Add organizations to network
+network.add_organization(org1)
+network.add_organization(org2)
+
+# Display network configuration
+print("\n--- NETWORK CONFIGURATION ---")
+
+for organization in network.organizations:
+
+    print("\nOrganization:", organization.name)
+
+    for peer in organization.peers:
+        print("Peer:", peer)
+
+# Start network
+network.start_network()
+
+# Add transactions
+network.add_transaction(
+    "Organization A transferred 100 tokens to Organization B"
+)
+
+network.add_transaction(
+    "Organization B received 100 tokens"
+)
+
+network.add_transaction(
+    "Organization A verified the transaction"
+)
+
+# Display ledger
+network.display_ledger()
+
+# Verify network
+print("\n--- NETWORK VALIDATION ---")
+
+print("Blockchain Valid?",
+      network.verify_network())
+
+print("Network Status:",
+      "Active" if network.active else "Inactive")
+
+# Stop network
+network.stop_network()
+
+print("\nPrivate Blockchain Simulation Completed.")
