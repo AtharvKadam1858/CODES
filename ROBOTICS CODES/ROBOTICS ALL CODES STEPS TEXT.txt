@@ -1,0 +1,1038 @@
+ROBOTICS ALL CODES STEPS
+
+Experiment 1 – Introduction to Robotics
+Wokwi
+Software: Wokwi – Arduino Uno Simulator
+Aim: To understand the basic working of a robot by simulating obstacle detection and servo-based robot head movement.
+Components required
+•	Arduino Uno
+•	HC-SR04 ultrasonic sensor
+•	Servo motor
+•	LED
+•	220 Ω resistor
+•	Buzzer
+Wiring connections
+Component	Component pin	Arduino pin
+HC-SR04	VCC	5V
+HC-SR04	GND	GND
+HC-SR04	TRIG	D7
+HC-SR04	ECHO	D6
+Servo	PWM	D9
+Servo	V+	5V
+Servo	GND	GND
+LED	Anode through 220 Ω resistor	D12
+LED	Cathode	GND
+Buzzer	Positive	D8
+Buzzer	Negative	GND
+Steps to perform
+1.	Open Wokwi and select New Project → Arduino Uno.
+2.	Add the HC-SR04, servo, LED, resistor and buzzer.
+3.	Connect the components using the wiring table.
+4.	Open sketch.ino.
+5.	Paste the following code.
+6.	Start the simulation.
+7.	Change the ultrasonic sensor distance and observe the robot's response in the Serial Monitor.
+Program
+
+// Experiment 1: Introduction to Robotics
+// Arduino Uno + Ultrasonic Sensor + Servo
+
+#include <Servo.h>
+
+#define TRIG_PIN 7
+#define ECHO_PIN 6
+#define SERVO_PIN 9
+#define LED_PIN 12
+#define BUZZER_PIN 8
+
+Servo robotHead;
+
+long duration;
+float distance;
+
+float readDistance() {
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+
+  duration = pulseIn(ECHO_PIN, HIGH, 30000);
+
+  if (duration == 0) return 400;
+
+  return duration * 0.0343 / 2;
+}
+
+void setup() {
+  Serial.begin(9600);
+
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+  pinMode(LED_PIN, OUTPUT);
+  pinMode(BUZZER_PIN, OUTPUT);
+
+  robotHead.attach(SERVO_PIN);
+  robotHead.write(90);
+
+  Serial.println("ROBOTICS INTRODUCTION");
+  Serial.println("---------------------");
+}
+
+void loop() {
+  distance = readDistance();
+
+  Serial.print("Obstacle Distance: ");
+  Serial.print(distance);
+  Serial.println(" cm");
+
+  if (distance < 20) {
+    Serial.println("Obstacle Detected!");
+    Serial.println("Robot Action: STOP");
+
+    digitalWrite(LED_PIN, HIGH);
+    tone(BUZZER_PIN, 1000);
+    robotHead.write(30);
+
+  } else {
+    Serial.println("Path is Clear");
+    Serial.println("Robot Action: MOVE FORWARD");
+
+    digitalWrite(LED_PIN, LOW);
+    noTone(BUZZER_PIN);
+    robotHead.write(90);
+  }
+
+  delay(1000);
+}
+Expected output:
+ROBOTICS INTRODUCTION
+---------------------
+Obstacle Distance: 15.00 cm
+Obstacle Detected!
+Robot Action: STOP
+
+Obstacle Distance: 40.00 cm
+Path is Clear
+Robot Action: MOVE FORWARD
+The LED and buzzer activate when an obstacle is detected. The servo changes its angle to represent robot head movement.
+
+
+
+Experiment 2 – Sensor Integration in Robotics
+Wokwi
+Software: Wokwi – Arduino Uno Simulator
+Aim: To integrate multiple sensors and use their readings to make basic robot movement decisions.
+Components required
+•	Arduino Uno
+•	HC-SR04 ultrasonic sensor
+•	Potentiometer (used as an analog sensor input)
+•	Two pushbuttons (used as left and right obstacle inputs)
+•	Red LED
+•	Green LED
+•	Two 220 Ω resistors
+Wiring connections
+Component	Pin	Arduino
+HC-SR04	TRIG	D9
+HC-SR04	ECHO	D10
+HC-SR04	VCC/GND	5V/GND
+Potentiometer	Middle pin	A0
+Potentiometer	Outer pins	5V/GND
+Left button	One side	D2
+Left button	Other side	GND
+Right button	One side	D3
+Right button	Other side	GND
+Red LED	Anode through resistor	D5
+Green LED	Anode through resistor	D6
+LEDs	Cathodes	GND
+Steps to perform
+1.	Create a new Arduino Uno project in Wokwi.
+2.	Add the components listed above.
+3.	Connect the sensors and buttons.
+4.	Paste the code below into sketch.ino.
+5.	Start the simulation.
+6.	Rotate the potentiometer and press the obstacle buttons.
+7.	Observe the sensor readings and selected robot action.
+Program
+
+// Experiment 2: Sensor Integration in Robotics
+
+#define TRIG_PIN 9
+#define ECHO_PIN 10
+
+#define POT_PIN A0
+#define LEFT_BUTTON 2
+#define RIGHT_BUTTON 3
+
+#define RED_LED 5
+#define GREEN_LED 6
+
+float distance;
+long duration;
+
+float readDistance() {
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+
+  duration = pulseIn(ECHO_PIN, HIGH, 30000);
+
+  if (duration == 0) return 400;
+
+  return duration * 0.0343 / 2;
+}
+
+void setup() {
+  Serial.begin(9600);
+
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+
+  pinMode(LEFT_BUTTON, INPUT_PULLUP);
+  pinMode(RIGHT_BUTTON, INPUT_PULLUP);
+
+  pinMode(RED_LED, OUTPUT);
+  pinMode(GREEN_LED, OUTPUT);
+
+  Serial.println("SENSOR INTEGRATION");
+}
+
+void loop() {
+  distance = readDistance();
+
+  int analogValue = analogRead(POT_PIN);
+
+  bool leftObstacle =
+      digitalRead(LEFT_BUTTON) == LOW;
+
+  bool rightObstacle =
+      digitalRead(RIGHT_BUTTON) == LOW;
+
+  Serial.println("\n--- Sensor Readings ---");
+
+  Serial.print("Ultrasonic Distance: ");
+  Serial.print(distance);
+  Serial.println(" cm");
+
+  Serial.print("Analog Sensor Value: ");
+  Serial.println(analogValue);
+
+  Serial.print("Left Obstacle: ");
+  Serial.println(leftObstacle ? "YES" : "NO");
+
+  Serial.print("Right Obstacle: ");
+  Serial.println(rightObstacle ? "YES" : "NO");
+
+  if (distance < 20) {
+    Serial.println("Action: STOP - Front Obstacle");
+    digitalWrite(RED_LED, HIGH);
+    digitalWrite(GREEN_LED, LOW);
+  }
+  else if (leftObstacle && !rightObstacle) {
+    Serial.println("Action: TURN RIGHT");
+    digitalWrite(RED_LED, HIGH);
+    digitalWrite(GREEN_LED, LOW);
+  }
+  else if (rightObstacle && !leftObstacle) {
+    Serial.println("Action: TURN LEFT");
+    digitalWrite(RED_LED, HIGH);
+    digitalWrite(GREEN_LED, LOW);
+  }
+  else if (leftObstacle && rightObstacle) {
+    Serial.println("Action: STOP");
+    digitalWrite(RED_LED, HIGH);
+    digitalWrite(GREEN_LED, LOW);
+  }
+  else {
+    Serial.println("Action: MOVE FORWARD");
+    digitalWrite(RED_LED, LOW);
+    digitalWrite(GREEN_LED, HIGH);
+  }
+
+  delay(1000);
+}
+Expected output:
+SENSOR INTEGRATION
+
+--- Sensor Readings ---
+Ultrasonic Distance: 40 cm
+Analog Sensor Value: 512
+Left Obstacle: NO
+Right Obstacle: NO
+Action: MOVE FORWARD
+The pushbuttons simulate left and right obstacle sensors. The potentiometer provides an additional analog sensor reading.
+
+
+
+Experiment 3 – Robot Kinematics and Dynamics
+Wokwi
+Software: Wokwi – Arduino Uno Simulator
+Aim: To calculate the forward kinematics and approximate gravitational torque of a two-link robotic arm and demonstrate joint movement using servo motors.
+Components required
+•	Arduino Uno
+•	Two servo motors
+•	Breadboard (optional)
+Wiring connections
+Servo	Pin	Arduino
+Servo 1	PWM	D9
+Servo 1	V+	5V
+Servo 1	GND	GND
+Servo 2	PWM	D10
+Servo 2	V+	5V
+Servo 2	GND	GND
+Steps to perform
+1.	Create a new Arduino Uno project.
+2.	Add two servo motors.
+3.	Connect the first servo to D9 and the second to D10.
+4.	Paste the following program.
+5.	Start the simulation.
+6.	Observe both servo movements.
+7.	Check the joint coordinates and torque calculations in the Serial Monitor.
+Program
+
+// Experiment 3: Robot Kinematics and Dynamics
+
+#include <Servo.h>
+#include <math.h>
+
+Servo joint1;
+Servo joint2;
+
+const float L1 = 5.0;
+const float L2 = 4.0;
+
+const float M1 = 2.0;
+const float M2 = 1.0;
+const float G = 9.81;
+
+void calculateRobot(float angle1, float angle2) {
+
+  float t1 = radians(angle1);
+  float t2 = radians(angle2);
+
+  // Forward Kinematics
+  float x1 = L1 * cos(t1);
+  float y1 = L1 * sin(t1);
+
+  float x2 = x1 + L2 * cos(t1 + t2);
+  float y2 = y1 + L2 * sin(t1 + t2);
+
+  // Approximate gravitational torque
+  float torque1 =
+      M1 * G * (L1 / 2) * cos(t1)
+      + M2 * G *
+      (L1 * cos(t1)
+      + (L2 / 2) * cos(t1 + t2));
+
+  float torque2 =
+      M2 * G * (L2 / 2) * cos(t1 + t2);
+
+  Serial.println("\nROBOT KINEMATICS");
+
+  Serial.print("Joint 1: ");
+  Serial.println(angle1);
+
+  Serial.print("Joint 2: ");
+  Serial.println(angle2);
+
+  Serial.print("End Effector X: ");
+  Serial.println(x2);
+
+  Serial.print("End Effector Y: ");
+  Serial.println(y2);
+
+  Serial.println("\nROBOT DYNAMICS");
+
+  Serial.print("Joint 1 Torque: ");
+  Serial.print(torque1);
+  Serial.println(" Nm");
+
+  Serial.print("Joint 2 Torque: ");
+  Serial.print(torque2);
+  Serial.println(" Nm");
+}
+
+void setup() {
+  Serial.begin(9600);
+
+  joint1.attach(9);
+  joint2.attach(10);
+
+  Serial.println("TWO LINK ROBOTIC ARM");
+
+  float angles[][2] = {
+    {20, 30},
+    {45, 30},
+    {60, 45},
+    {90, 30}
+  };
+
+  for (int i = 0; i < 4; i++) {
+
+    joint1.write(angles[i][0]);
+    joint2.write(angles[i][1]);
+
+    calculateRobot(
+      angles[i][0],
+      angles[i][1]
+    );
+
+    delay(1500);
+  }
+}
+
+void loop() {
+}
+Expected output:
+•	Servo motors move to four joint configurations.
+•	End-effector X and Y coordinates are printed.
+•	Approximate joint gravitational torques are calculated.
+This is a simplified planar, two-link arm model. The torque calculation assumes stationary links, point masses for the link centres of mass and gravity acting vertically; it is not a complete dynamic model including acceleration and inertia.
+
+
+
+
+Experiment 4 – Image Processing for Object Detection
+Google Colab
+Software: Google Colab, Python, OpenCV and Ultralytics YOLO.
+Aim: To process an image and identify objects using a pre-trained deep learning object-detection model.
+Requirements
+•	Google account
+•	Google Colab notebook
+•	Internet connection
+•	An image containing objects such as people, cars, chairs, bottles or animals
+Steps to perform
+1.	Open Google Colab.
+2.	Click New Notebook.
+3.	Optional: select Runtime → Change runtime type → T4 GPU if available.
+4.	Paste and run the code below.
+5.	Upload an image when Colab asks you to select a file.
+6.	Wait for the model to detect the objects.
+7.	Observe the detected object names, confidence scores and bounding boxes.
+Program
+# Experiment 4: Image Processing for Object Detection!pip install ultralytics opencv-python -qfrom ultralytics import YOLOfrom google.colab import filesimport matplotlib.pyplot as plt# Load pre-trained YOLO modelprint("Loading YOLO Model...")model = YOLO("yolov8n.pt")# Upload imageprint("Upload an image:")uploaded = files.upload()image_path = next(iter(uploaded.keys()))# Perform object detectionresults = model.predict(    source=image_path,    conf=0.25)# Print detected objectsprint("\nOBJECT DETECTION RESULTS")print("------------------------")for result in results:    if len(result.boxes) == 0:        print("No objects detected.")
+Expected output:
+Loading YOLO Model...
+Upload an image:
+
+OBJECT DETECTION RESULTS
+------------------------
+Object: person | Confidence: 92.45 %
+Object: chair | Confidence: 87.32 %
+The example confidence values are illustrative; actual results depend on your uploaded image. YOLO downloads its model weights when first used.
+
+
+
+
+Experiment 5 – Trajectory Planning for a Robotic Arm
+Wokwi
+Software: Wokwi – Arduino Uno Simulator
+Aim: To generate a smooth trajectory for a two-joint robotic arm using cubic interpolation and demonstrate its movement using servo motors.
+Components required
+•	Arduino Uno
+•	Two servo motors
+Wiring connections
+Component	Pin	Arduino
+Servo 1	PWM	D9
+Servo 1	V+	5V
+Servo 1	GND	GND
+Servo 2	PWM	D10
+Servo 2	V+	5V
+Servo 2	GND	GND
+Steps to perform
+1.	Open Wokwi and create a new Arduino Uno project.
+2.	Add two servo motors.
+3.	Connect the first servo to D9 and second servo to D10.
+4.	Paste the program into sketch.ino.
+5.	Start the simulation.
+6.	Observe both servo motors moving smoothly between the initial and final positions.
+7.	Open the Serial Monitor to see the trajectory points.
+Program
+
+// Experiment 5: Trajectory Planning for Robotic Arm
+
+#include <Servo.h>
+
+Servo joint1;
+Servo joint2;
+
+const int SERVO1_PIN = 9;
+const int SERVO2_PIN = 10;
+
+float start1 = 20;
+float end1 = 100;
+
+float start2 = 30;
+float end2 = 120;
+
+void setup() {
+
+  Serial.begin(9600);
+
+  joint1.attach(SERVO1_PIN);
+  joint2.attach(SERVO2_PIN);
+
+  Serial.println("ROBOT ARM TRAJECTORY PLANNING");
+  Serial.println("-----------------------------");
+
+  const int points = 50;
+
+  // Cubic smooth trajectory
+  for (int i = 0; i <= points; i++) {
+
+    float t = (float)i / points;
+
+    float s = 3 * t * t - 2 * t * t * t;
+
+    float angle1 =
+        start1 + (end1 - start1) * s;
+
+    float angle2 =
+        start2 + (end2 - start2) * s;
+
+    joint1.write((int)angle1);
+    joint2.write((int)angle2);
+
+    Serial.print("Point: ");
+    Serial.print(i);
+
+    Serial.print(" | Joint 1: ");
+    Serial.print(angle1);
+
+    Serial.print(" | Joint 2: ");
+    Serial.println(angle2);
+
+    delay(100);
+  }
+
+  Serial.println("\nTrajectory Completed!");
+}
+
+void loop() {
+}
+Expected output:
+ROBOT ARM TRAJECTORY PLANNING
+-----------------------------
+Point: 0 | Joint 1: 20 | Joint 2: 30
+Point: 1 | Joint 1: ...
+Point: 2 | Joint 1: ...
+...
+Point: 50 | Joint 1: 100 | Joint 2: 120
+
+Trajectory Completed!
+The two servos move from their initial angles to their final angles using a smooth trajectory.
+
+
+
+
+Experiment 6 – SLAM Implementation
+Google Colab
+Software: Google Colab, Python, NumPy and Matplotlib.
+Aim: To demonstrate Simultaneous Localization and Mapping (SLAM) by simulating a mobile robot that estimates its movement and builds an occupancy grid map using simulated distance sensor readings.
+Requirements
+•	Google Colab
+•	Python 3
+•	NumPy
+•	Matplotlib
+Steps to perform
+1.	Open Google Colab.
+2.	Create a new notebook.
+3.	Paste the complete code below.
+4.	Run the cell.
+5.	Observe the simulated environment, robot movement and generated occupancy map.
+Program
+# Experiment 6: Simplified SLAM Implementationimport numpy as npimport matplotlib.pyplot as pltimport mathnp.random.seed(10)# Environment sizeSIZE = 30# Create actual environmentworld = np.zeros((SIZE, SIZE), dtype=int)# Add obstaclesworld[5:15, 10] = 1world[18, 5:20] = 1world[8:20, 23] = 1world[24, 8:15] = 1# Unknown occupancy map# -1 = Unknown#  0 = Free#  1 = Occupiedrobot_map = np.full(    (SIZE, SIZE), -1, dtype=int)# Robot starting positionrobot_x = 2.0robot_y = 2.0# Simulated robot movementposes = [
+Expected output:
+1.	Actual environment containing obstacles.
+2.	Robot movement path.
+3.	Generated occupancy grid map.
+Technical note: This is a simplified occupancy-grid mapping simulation using supplied robot poses and simulated laser readings. It demonstrates mapping and localization concepts, but it is not a full SLAM solution with simultaneous probabilistic pose estimation and loop closure.
+
+
+
+
+
+Experiment 7 – Path Planning and Decision-Making
+Wokwi
+Software: Wokwi – Arduino Uno Simulator
+Aim: To implement the A* path-planning algorithm and find a safe path for a robot from a starting point to a destination while avoiding obstacles.
+Components required
+•	Arduino Uno
+•	LED
+•	220 Ω resistor
+The path is calculated on an 8 × 8 grid. The LED indicates that the path-planning process has completed.
+Wiring connections
+Component	Pin	Arduino
+LED anode	Through 220 Ω resistor	D13
+LED cathode	GND	GND
+Steps to perform
+1.	Open Wokwi and create an Arduino Uno project.
+2.	Add an LED and a resistor.
+3.	Connect the LED to D13 through the resistor.
+4.	Paste the code into sketch.ino.
+5.	Start the simulation.
+6.	Open the Serial Monitor.
+7.	Observe the calculated path and path length.
+Program
+
+// Experiment 7: A* Path Planning for a Robot
+
+#define SIZE 8
+#define LED_PIN 13
+
+int grid[SIZE][SIZE] = {
+  {0,0,0,0,0,0,0,0},
+  {0,0,0,0,0,0,0,0},
+  {0,1,1,1,1,1,0,0},
+  {0,0,0,0,0,0,0,0},
+  {0,0,0,1,0,0,0,0},
+  {0,0,0,1,0,0,0,0},
+  {0,0,0,1,0,0,0,0},
+  {0,0,0,0,0,0,0,0}
+};
+
+const int TOTAL = SIZE * SIZE;
+const int INF = 10000;
+
+int gScore[TOTAL];
+int parentNode[TOTAL];
+
+bool openSet[TOTAL];
+bool closedSet[TOTAL];
+
+int dx[4] = {-1, 1, 0, 0};
+int dy[4] = {0, 0, -1, 1};
+
+int heuristic(int a, int b) {
+  int ax = a / SIZE;
+  int ay = a % SIZE;
+
+  int bx = b / SIZE;
+  int by = b % SIZE;
+
+  return abs(ax - bx) + abs(ay - by);
+}
+
+void findPath(int start, int goal) {
+
+  for (int i = 0; i < TOTAL; i++) {
+    gScore[i] = INF;
+    parentNode[i] = -1;
+
+    openSet[i] = false;
+    closedSet[i] = false;
+  }
+
+  gScore[start] = 0;
+  openSet[start] = true;
+
+  bool found = false;
+
+  while (true) {
+
+    int current = -1;
+    int bestF = INF;
+
+    // Select node with minimum f-score
+    for (int i = 0; i < TOTAL; i++) {
+
+      if (openSet[i] && !closedSet[i]) {
+
+        int f = gScore[i] + heuristic(i, goal);
+
+        if (f < bestF) {
+          bestF = f;
+          current = i;
+        }
+      }
+    }
+
+    if (current == -1) break;
+
+    if (current == goal) {
+      found = true;
+      break;
+    }
+
+    openSet[current] = false;
+    closedSet[current] = true;
+
+    int x = current / SIZE;
+    int y = current % SIZE;
+
+    for (int d = 0; d < 4; d++) {
+
+      int nx = x + dx[d];
+      int ny = y + dy[d];
+
+      if (nx < 0 || nx >= SIZE ||
+          ny < 0 || ny >= SIZE) {
+        continue;
+      }
+
+      if (grid[nx][ny] == 1) continue;
+
+      int neighbor = nx * SIZE + ny;
+
+      if (closedSet[neighbor]) continue;
+
+      int tentativeG = gScore[current] + 1;
+
+      if (tentativeG < gScore[neighbor]) {
+
+        parentNode[neighbor] = current;
+        gScore[neighbor] = tentativeG;
+        openSet[neighbor] = true;
+      }
+    }
+  }
+
+  if (!found) {
+    Serial.println("No Path Found!");
+    return;
+  }
+
+  // Reconstruct path
+  int path[TOTAL];
+  int count = 0;
+
+  int current = goal;
+
+  while (current != -1 && count < TOTAL) {
+    path[count++] = current;
+    current = parentNode[current];
+  }
+
+  Serial.println("\nA* PATH PLANNING RESULTS");
+  Serial.println("------------------------");
+
+  Serial.print("Start: ");
+  Serial.println(start);
+
+  Serial.print("Goal: ");
+  Serial.println(goal);
+
+  Serial.println("Path Coordinates:");
+
+  for (int i = count - 1; i >= 0; i--) {
+
+    int x = path[i] / SIZE;
+    int y = path[i] % SIZE;
+
+    Serial.print("(");
+    Serial.print(x);
+    Serial.print(",");
+    Serial.print(y);
+    Serial.print(") ");
+
+  }
+
+  Serial.println();
+
+  Serial.print("Path Length: ");
+  Serial.println(count - 1);
+
+  Serial.println("Path Found Successfully!");
+
+  digitalWrite(LED_PIN, HIGH);
+}
+
+void setup() {
+
+  Serial.begin(9600);
+
+  pinMode(LED_PIN, OUTPUT);
+
+  Serial.println("ROBOT PATH PLANNING");
+
+  // Start at (0,0), Goal at (7,7)
+  findPath(0, TOTAL - 1);
+}
+
+void loop() {
+}
+Expected output:
+ROBOT PATH PLANNING
+
+A* PATH PLANNING RESULTS
+------------------------
+Start: 0
+Goal: 63
+Path Coordinates:
+(0,0) (1,0) (2,0) ...
+Path Found Successfully!
+The exact path is printed in the Serial Monitor, and the LED turns on after a path is found.
+
+
+
+Experiment 8 – Decision-Making in Robots
+Wokwi
+Software: Wokwi – Arduino Uno Simulator
+Aim: To develop a rule-based decision-making system that selects robot actions based on obstacle distance, left and right obstacle inputs, and battery level.
+Components required
+•	Arduino Uno
+•	HC-SR04 ultrasonic sensor
+•	Two pushbuttons
+•	Potentiometer
+•	Red LED
+•	Green LED
+•	Buzzer
+•	Two 220 Ω resistors
+Wiring connections
+Component	Pin	Arduino
+HC-SR04 TRIG	TRIG	D9
+HC-SR04 ECHO	ECHO	D10
+HC-SR04 VCC/GND	Power	5V/GND
+Left button	One side	D2
+Left button	Other side	GND
+Right button	One side	D3
+Right button	Other side	GND
+Potentiometer	Middle pin	A0
+Potentiometer	Outer pins	5V/GND
+Red LED	Anode through resistor	D5
+Green LED	Anode through resistor	D6
+Buzzer	Positive	D8
+Buzzer	Negative	GND
+Steps to perform
+1.	Create a new Arduino Uno project.
+2.	Add all the required components.
+3.	Connect the components according to the table.
+4.	Paste the following code into sketch.ino.
+5.	Start the simulation.
+6.	Change the ultrasonic distance.
+7.	Press the left and right obstacle buttons.
+8.	Rotate the potentiometer to change the simulated battery level.
+9.	Observe the robot's decision in the Serial Monitor.
+Program
+
+// Experiment 8: Decision-Making in Robots
+
+#define TRIG_PIN 9
+#define ECHO_PIN 10
+
+#define LEFT_BUTTON 2
+#define RIGHT_BUTTON 3
+
+#define BATTERY_PIN A0
+
+#define RED_LED 5
+#define GREEN_LED 6
+#define BUZZER 8
+
+float readDistance() {
+
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+
+  digitalWrite(TRIG_PIN, LOW);
+
+  long duration = pulseIn(ECHO_PIN, HIGH, 30000);
+
+  if (duration == 0) return 400;
+
+  return duration * 0.0343 / 2;
+}
+
+void setup() {
+
+  Serial.begin(9600);
+
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+
+  pinMode(LEFT_BUTTON, INPUT_PULLUP);
+  pinMode(RIGHT_BUTTON, INPUT_PULLUP);
+
+  pinMode(RED_LED, OUTPUT);
+  pinMode(GREEN_LED, OUTPUT);
+  pinMode(BUZZER, OUTPUT);
+
+  Serial.println("ROBOT DECISION-MAKING SYSTEM");
+}
+
+void loop() {
+
+  float distance = readDistance();
+
+  int batteryValue = analogRead(BATTERY_PIN);
+
+  int batteryLevel = map(
+    batteryValue, 0, 1023, 0, 100
+  );
+
+  bool leftObstacle =
+    digitalRead(LEFT_BUTTON) == LOW;
+
+  bool rightObstacle =
+    digitalRead(RIGHT_BUTTON) == LOW;
+
+  Serial.println("\n-------------------------");
+
+  Serial.print("Distance: ");
+  Serial.print(distance);
+  Serial.println(" cm");
+
+  Serial.print("Battery: ");
+  Serial.print(batteryLevel);
+  Serial.println("%");
+
+  String action;
+
+  // Decision priority
+  if (batteryLevel < 20) {
+
+    action = "GO TO CHARGING STATION";
+
+  }
+  else if (distance < 20) {
+
+    action = "STOP - FRONT OBSTACLE";
+
+  }
+  else if (leftObstacle && rightObstacle) {
+
+    action = "STOP - BOTH SIDES BLOCKED";
+
+  }
+  else if (leftObstacle) {
+
+    action = "TURN RIGHT";
+
+  }
+  else if (rightObstacle) {
+
+    action = "TURN LEFT";
+
+  }
+  else {
+
+    action = "MOVE FORWARD";
+
+  }
+
+  Serial.print("Robot Action: ");
+  Serial.println(action);
+
+  if (action == "MOVE FORWARD") {
+
+    digitalWrite(GREEN_LED, HIGH);
+    digitalWrite(RED_LED, LOW);
+    noTone(BUZZER);
+
+  }
+  else {
+
+    digitalWrite(GREEN_LED, LOW);
+    digitalWrite(RED_LED, HIGH);
+
+    tone(BUZZER, 1000, 300);
+  }
+
+  delay(1000);
+}
+Expected output:
+ROBOT DECISION-MAKING SYSTEM
+
+-------------------------
+Distance: 15 cm
+Battery: 80%
+Robot Action: STOP - FRONT OBSTACLE
+Other possible decisions include:
+•	MOVE FORWARD
+•	TURN LEFT
+•	TURN RIGHT
+•	STOP - BOTH SIDES BLOCKED
+•	GO TO CHARGING STATION
+
+
+
+Experiment 9 – Reinforcement Learning for Robot Control
+Google Colab
+Software: Google Colab, Python, NumPy and Matplotlib.
+Aim: To train a robot using the Q-learning reinforcement learning algorithm to reach a destination while avoiding obstacles.
+Requirements
+•	Google Colab
+•	Python 3
+•	NumPy
+•	Matplotlib
+Steps to perform
+1.	Open Google Colab.
+2.	Create a new notebook.
+3.	Paste the complete program below.
+4.	Run the code.
+5.	Wait for the robot to complete its training episodes.
+6.	Observe the learned path and training results.
+Program
+# Experiment 9: Reinforcement Learning for Robot Controlimport numpy as npimport matplotlib.pyplot as plt# Grid environmentSIZE = 5start = (0, 0)goal = (4, 4)# Obstacle locationsobstacles = [    (1, 1),    (2, 1),    (3, 3)]# Actions# 0 = Up, 1 = Down, 2 = Left, 3 = Rightactions = [    (-1, 0),    (1, 0),    (0, -1),    (0, 1)]# Q-tableQ = np.zeros((SIZE, SIZE, 4))# Learning parametersalpha = 0.1gamma = 0.9
+Expected output:
+•	Q-learning training for 5000 episodes.
+•	Learned robot path.
+•	Goal reached message.
+•	Graph showing obstacles, start, destination and learned path.
+The learning process uses random exploration, so results can vary if the random seed or environment is changed. This is a grid-world learning simulation, not control of a physical robot.
+
+
+
+Experiment 10 – Emotion Recognition Using AI
+Google Colab
+Software: Google Colab, Python, Hugging Face Transformers and PyTorch.
+Aim: To recognize facial expressions using a pre-trained Vision Transformer (ViT) deep learning model.
+Requirements
+•	Google Colab
+•	Internet connection
+•	A clear image containing a face
+•	Python libraries: Transformers, PyTorch and Pillow
+Steps to perform
+1.	Open Google Colab.
+2.	Create a new notebook.
+3.	Paste the following code.
+4.	Run the code.
+5.	Upload a clear face image when prompted.
+6.	Wait for the model to process the image.
+7.	Observe the predicted expression and confidence score.
+Program
+# Experiment 10: Emotion Recognition Using AI!pip install transformers torch pillow -qfrom transformers import pipelinefrom google.colab import filesfrom PIL import Imageimport matplotlib.pyplot as plt# Load pre-trained emotion recognition modelprint("Loading Emotion Recognition Model...")emotion_model = pipeline(    "image-classification",    model="trpakov/vit-face-expression")# Upload face imageprint("Upload a clear face image:")uploaded = files.upload()image_path = next(iter(uploaded.keys()))# Read imageimage = Image.open(image_path).convert("RGB")# Predict facial expressionresults = emotion_model(image)# Display resultsprint("\nEMOTION RECOGNITION RESULTS")print("---------------------------")for result in results:
+Expected output:
+Loading Emotion Recognition Model...
+Upload a clear face image:
+
+EMOTION RECOGNITION RESULTS
+---------------------------
+Happy : 85.20 %
+Neutral : 8.50 %
+Surprise : 3.20 %
+Sad : 2.10 %
+
+Final Prediction:
+Facial Expression: Happy
+Confidence: 85.20 %
+The percentages above are illustrative. Actual predictions depend on the uploaded image. The model classifies visible facial expressions into categories such as happy, sad, angry, fear, surprise, disgust and neutral. It does not establish a person's actual emotional state. The model card reports approximately 71% test accuracy on FER2013, so predictions can be incorrect. 
+Hugging Face+1
+Final checklist – All 10 Robotics experiments
+Exp.	Software	Main output
+1	Wokwi	Obstacle detection and robot response
+2	Wokwi	Integrated sensor readings and decisions
+3	Wokwi	Arm movement, coordinates and torque
+4	Google Colab	Detected objects with bounding boxes
+5	Wokwi	Two-servo trajectory movement
+6	Google Colab	Robot path and occupancy map
+7	Wokwi	A* path coordinates
+8	Wokwi	Rule-based robot actions
+9	Google Colab	Q-learning robot navigation
+10	Google Colab	Facial-expression classification
+Where to run each experiment
+Week 4 - Daniel Peña - Fab Academy documentation
+Wokwi – Experiments 1, 2, 3, 5, 7 and 8
+Create a separate Arduino Uno project for each experiment. Add the components and wire them according to the tables.
+Open Wokwi 
+Google Colab color icon in PNG, SVG
+Google Colab – Experiments 4, 6, 9 and 10
+Create a separate notebook for each experiment. Run the complete code in a cell and save the output screenshots.
+

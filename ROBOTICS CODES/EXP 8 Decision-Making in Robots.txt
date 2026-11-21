@@ -1,0 +1,42 @@
+ROBOTICS EXP 8 COLAB
+
+
+# Experiment 8: Decision-Making in Robots
+
+# Simulated sensor inputs
+distance = 15
+battery = 80
+obstacle_left = True
+obstacle_right = False
+
+print("ROBOT DECISION-MAKING SYSTEM")
+print("----------------------------")
+
+print("Distance:", distance, "cm")
+print("Battery:", battery, "%")
+print("Obstacle on Left:", obstacle_left)
+print("Obstacle on Right:", obstacle_right)
+
+# Robot decision-making
+if battery < 20:
+
+    action = "Go to Charging Station"
+
+elif distance < 20:
+
+    if not obstacle_right:
+        action = "Turn Right"
+
+    elif not obstacle_left:
+        action = "Turn Left"
+
+    else:
+        action = "Stop"
+
+else:
+    action = "Move Forward"
+
+print("\nRobot Decision:")
+print("Selected Action:", action)
+
+

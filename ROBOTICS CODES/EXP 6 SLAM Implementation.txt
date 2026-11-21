@@ -1,0 +1,101 @@
+ROBOTICS EXP 6 COLAB
+
+
+# Experiment 6: Simplified SLAM Mapping Simulation
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Create environment
+size = 20
+world = np.zeros((size, size))
+
+# Add obstacles
+world[5:10, 8] = 1
+world[12, 4:12] = 1
+world[3:7, 15] = 1
+
+# Unknown map initially
+robot_map = np.full((size, size), -1)
+
+# Robot position
+robot_x = 2
+robot_y = 2
+
+# Sensor directions
+directions = [
+    (0, 1),
+    (1, 0),
+    (0, -1),
+    (-1, 0),
+    (1, 1),
+    (-1, 1),
+    (1, -1),
+    (-1, -1)
+]
+
+# Simulate distance sensor
+def scan_environment(x, y, dx, dy):
+
+    distance = 0
+
+    while True:
+        nx = x + (distance + 1) * dx
+        ny = y + (distance + 1) * dy
+
+        if not (0 <= nx < size and 0 <= ny < size):
+            break
+
+        if world[nx, ny] == 1:
+            return distance + 1
+
+        distance += 1
+
+    return distance
+
+
+# Build map using sensor readings
+for dx, dy in directions:
+
+    distance = scan_environment(
+        robot_x, robot_y, dx, dy
+    )
+
+    for step in range(1, distance + 1):
+
+        nx = robot_x + step * dx
+        ny = robot_y + step * dy
+
+        if 0 <= nx < size and 0 <= ny < size:
+            robot_map[nx, ny] = 0
+
+    ox = robot_x + distance * dx
+    oy = robot_y + distance * dy
+
+    if 0 <= ox < size and 0 <= oy < size:
+        if world[ox, oy] == 1:
+            robot_map[ox, oy] = 1
+
+# Mark robot position
+robot_map[robot_x, robot_y] = 2
+
+print("SLAM MAPPING SIMULATION")
+print("-----------------------")
+print("Robot Position:", (robot_x, robot_y))
+print("Map Generated Successfully")
+
+# Display actual environment
+plt.figure(figsize=(7, 6))
+plt.imshow(world, cmap="gray_r")
+plt.title("Actual Environment")
+plt.colorbar()
+plt.show()
+
+# Display generated map
+plt.figure(figsize=(7, 6))
+plt.imshow(robot_map, cmap="viridis")
+plt.title("Robot Generated Occupancy Map")
+plt.colorbar()
+plt.show()
+
+

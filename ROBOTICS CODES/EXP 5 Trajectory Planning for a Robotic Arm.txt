@@ -1,0 +1,68 @@
+ROBOTICS EXP 5 COLAB
+
+
+# Experiment 5: Trajectory Planning for a Robotic Arm
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Robotic arm link lengths
+L1 = 5
+L2 = 4
+
+# Initial and final joint angles
+start_angles = np.radians([20, 30])
+end_angles = np.radians([70, 50])
+
+# Time parameters
+time = np.linspace(0, 5, 100)
+T = 5
+
+# Cubic trajectory interpolation
+s = 3 * (time / T)**2 - 2 * (time / T)**3
+
+theta1 = start_angles[0] + (
+    end_angles[0] - start_angles[0]
+) * s
+
+theta2 = start_angles[1] + (
+    end_angles[1] - start_angles[1]
+) * s
+
+# Calculate end-effector positions
+x = L1 * np.cos(theta1) + L2 * np.cos(theta1 + theta2)
+y = L1 * np.sin(theta1) + L2 * np.sin(theta1 + theta2)
+
+print("TRAJECTORY PLANNING")
+print("-------------------")
+print("Initial Joint Angles:", np.degrees(start_angles))
+print("Final Joint Angles:", np.degrees(end_angles))
+print("Trajectory Points:", len(time))
+
+# Plot joint trajectories
+plt.figure(figsize=(9, 5))
+plt.plot(time, np.degrees(theta1), label="Joint 1")
+plt.plot(time, np.degrees(theta2), label="Joint 2")
+
+plt.xlabel("Time (seconds)")
+plt.ylabel("Joint Angle (degrees)")
+plt.title("Robotic Arm Joint Trajectory")
+plt.legend()
+plt.grid(True)
+plt.show()
+
+# Plot end-effector path
+plt.figure(figsize=(7, 6))
+plt.plot(x, y, label="End Effector Path")
+plt.scatter(x[0], y[0], label="Start")
+plt.scatter(x[-1], y[-1], label="End")
+
+plt.xlabel("X Position")
+plt.ylabel("Y Position")
+plt.title("Robotic Arm Trajectory")
+plt.legend()
+plt.grid(True)
+plt.axis("equal")
+plt.show()
+
+

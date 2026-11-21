@@ -1,0 +1,154 @@
+ROBOTICS EXP 9 COLAB
+
+
+# Experiment 9: Reinforcement Learning for Robot Control
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Environment size
+size = 5
+
+start = (0, 0)
+goal = (4, 4)
+
+# Obstacle positions
+obstacles = [
+    (1, 1),
+    (2, 1),
+    (3, 3)
+]
+
+# Actions: Up, Down, Left, Right
+actions = [
+    (-1, 0),
+    (1, 0),
+    (0, -1),
+    (0, 1)
+]
+
+# Q-table
+Q = np.zeros((size, size, 4))
+
+# Parameters
+alpha = 0.1
+gamma = 0.9
+epsilon = 0.2
+episodes = 1000
+
+# Training
+for episode in range(episodes):
+
+    state = start
+
+    for step in range(100):
+
+        x, y = state
+
+        if np.random.random() < epsilon:
+            action = np.random.randint(4)
+        else:
+            action = np.argmax(Q[x, y])
+
+        dx, dy = actions[action]
+
+        nx = x + dx
+        ny = y + dy
+
+        # Check boundaries
+        if not (0 <= nx < size and 0 <= ny < size):
+            nx, ny = x, y
+
+        next_state = (nx, ny)
+
+        # Rewards
+        if next_state == goal:
+            reward = 100
+        elif next_state in obstacles:
+            reward = -100
+            next_state = state
+            nx, ny = state
+        else:
+            reward = -1
+
+        # Q-learning update
+        old_value = Q[x, y, action]
+        next_max = np.max(Q[nx, ny])
+
+        Q[x, y, action] = old_value + alpha * (
+            reward + gamma * next_max - old_value
+        )
+
+        state = next_state
+
+        if state == goal:
+            break
+
+# Test trained robot
+state = start
+path = [state]
+
+for step in range(50):
+
+    x, y = state
+
+    action = np.argmax(Q[x, y])
+
+    dx, dy = actions[action]
+
+    nx = x + dx
+    ny = y + dy
+
+    if not (0 <= nx < size and 0 <= ny < size):
+        break
+
+    next_state = (nx, ny)
+
+    if next_state in obstacles:
+        break
+
+    state = next_state
+    path.append(state)
+
+    if state == goal:
+        break
+
+print("REINFORCEMENT LEARNING RESULTS")
+print("------------------------------")
+print("Training Episodes:", episodes)
+print("Robot Path:", path)
+
+if path[-1] == goal:
+    print("Goal Reached Successfully!")
+else:
+    print("Goal Not Reached in This Test Run.")
+
+# Display learned path
+plt.figure(figsize=(6, 6))
+
+for obstacle in obstacles:
+    plt.scatter(
+        obstacle[1],
+        obstacle[0],
+        color="black",
+        s=150
+    )
+
+px = [p[1] for p in path]
+py = [p[0] for p in path]
+
+plt.plot(px, py, marker="o", label="Learned Robot Path")
+
+plt.scatter(start[1], start[0], color="green", label="Start")
+plt.scatter(goal[1], goal[0], color="red", label="Goal")
+
+plt.title("Q-Learning Robot Navigation")
+plt.xlabel("X Position")
+plt.ylabel("Y Position")
+plt.xticks(range(size))
+plt.yticks(range(size))
+plt.grid(True)
+plt.legend()
+plt.show()
+
+

@@ -1,0 +1,52 @@
+ROBOTICS EXP 1 COLAB
+
+
+# Experiment 1: Introduction to Robotics
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Robot initial position
+x = 0
+y = 0
+theta = 0
+
+# Robot movement parameters
+linear_velocity = 1
+angular_velocity = 0.1
+time_steps = 100
+dt = 0.1
+
+x_positions = []
+y_positions = []
+
+# Robot movement simulation
+for i in range(time_steps):
+
+    x = x + linear_velocity * np.cos(theta) * dt
+    y = y + linear_velocity * np.sin(theta) * dt
+
+    theta = theta + angular_velocity * dt
+
+    x_positions.append(x)
+    y_positions.append(y)
+
+# Display robot path
+plt.figure(figsize=(8, 6))
+plt.plot(x_positions, y_positions, label="Robot Path")
+plt.scatter(0, 0, color="green", label="Start")
+plt.scatter(x, y, color="red", label="End")
+
+plt.xlabel("X Position")
+plt.ylabel("Y Position")
+plt.title("Mobile Robot Movement Simulation")
+plt.legend()
+plt.grid(True)
+plt.axis("equal")
+plt.show()
+
+print("Robot Simulation Completed")
+print("Final X Position:", round(x, 2))
+print("Final Y Position:", round(y, 2))
+
+

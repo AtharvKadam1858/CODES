@@ -1,0 +1,54 @@
+ROBOTICS EXP 2 COLAB
+
+
+# Experiment 2: Sensor Integration in Robotics
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Simulated sensor readings
+ultrasonic_distance = 25
+infrared_value = 1
+temperature = 30
+
+print("ROBOT SENSOR READINGS")
+print("---------------------")
+
+print("Ultrasonic Distance:", ultrasonic_distance, "cm")
+print("Infrared Sensor:", infrared_value)
+print("Temperature:", temperature, "C")
+
+# Sensor-based decision making
+if ultrasonic_distance < 20:
+    print("\nObstacle Detected!")
+    print("Robot Action: Stop")
+
+elif infrared_value == 0:
+    print("\nLine Detected!")
+    print("Robot Action: Follow Line")
+
+else:
+    print("\nNo Obstacle Detected")
+    print("Robot Action: Move Forward")
+
+# Display sensor readings
+sensors = [
+    "Ultrasonic (cm)",
+    "Infrared",
+    "Temperature (C)"
+]
+
+values = [
+    ultrasonic_distance,
+    infrared_value,
+    temperature
+]
+
+plt.figure(figsize=(8, 5))
+plt.bar(sensors, values)
+plt.title("Robot Sensor Readings")
+plt.ylabel("Sensor Values")
+plt.grid(axis="y")
+plt.show()
+
+

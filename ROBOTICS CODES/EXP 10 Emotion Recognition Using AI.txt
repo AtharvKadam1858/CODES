@@ -1,0 +1,59 @@
+ROBOTICS EXP 10 COLAB
+
+
+# Experiment 10: Emotion Recognition Using AI
+
+!pip install transformers torch pillow -q
+
+from transformers import pipeline
+from google.colab import files
+from PIL import Image
+import matplotlib.pyplot as plt
+
+# Load pre-trained facial expression model
+print("Loading Emotion Recognition Model...")
+
+emotion_model = pipeline(
+    "image-classification",
+    model="trpakov/vit-face-expression"
+)
+
+# Upload image
+uploaded = files.upload()
+
+image_path = next(iter(uploaded))
+
+# Read image
+image = Image.open(image_path).convert("RGB")
+
+# Predict facial expression
+results = emotion_model(image)
+
+print("\nEMOTION RECOGNITION RESULTS")
+print("---------------------------")
+
+for result in results:
+    print(
+        result["label"],
+        ":",
+        round(result["score"] * 100, 2),
+        "%"
+    )
+
+# Display image
+plt.figure(figsize=(6, 6))
+plt.imshow(image)
+plt.title("Uploaded Facial Image")
+plt.axis("off")
+plt.show()
+
+# Display highest prediction
+best_result = results[0]
+
+print("\nPredicted Facial Expression:",
+      best_result["label"])
+
+print("Confidence:",
+      round(best_result["score"] * 100, 2), "%")
+
+

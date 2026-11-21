@@ -1,0 +1,76 @@
+ROBOTICS EXP 3 COLAB
+
+
+# Experiment 3: Robot Kinematics and Dynamics
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Length of robot arm links
+L1 = 5
+L2 = 4
+
+# Joint angles in degrees
+theta1 = 45
+theta2 = 30
+
+# Convert degrees into radians
+t1 = np.radians(theta1)
+t2 = np.radians(theta2)
+
+# Forward Kinematics
+x1 = L1 * np.cos(t1)
+y1 = L1 * np.sin(t1)
+
+x2 = x1 + L2 * np.cos(t1 + t2)
+y2 = y1 + L2 * np.sin(t1 + t2)
+
+print("ROBOT KINEMATICS")
+print("----------------")
+print("Joint 1 Angle:", theta1)
+print("Joint 2 Angle:", theta2)
+print("End Effector X:", round(x2, 2))
+print("End Effector Y:", round(y2, 2))
+
+# Basic dynamics: gravity torque approximation
+m1 = 2
+m2 = 1
+g = 9.81
+
+torque1 = (
+    m1 * g * (L1 / 2) * np.cos(t1)
+    + m2 * g * (
+        L1 * np.cos(t1)
+        + (L2 / 2) * np.cos(t1 + t2)
+    )
+)
+
+torque2 = m2 * g * (L2 / 2) * np.cos(t1 + t2)
+
+print("\nROBOT DYNAMICS")
+print("----------------")
+print("Joint 1 Gravity Torque:", round(torque1, 2), "Nm")
+print("Joint 2 Gravity Torque:", round(torque2, 2), "Nm")
+
+# Plot robotic arm
+plt.figure(figsize=(7, 7))
+
+plt.plot(
+    [0, x1, x2],
+    [0, y1, y2],
+    marker="o",
+    linewidth=4
+)
+
+plt.scatter(0, 0, color="green", label="Base")
+plt.scatter(x2, y2, color="red", label="End Effector")
+
+plt.xlabel("X Position")
+plt.ylabel("Y Position")
+plt.title("Two-Link Robotic Arm")
+plt.legend()
+plt.grid(True)
+plt.axis("equal")
+plt.show()
+
+

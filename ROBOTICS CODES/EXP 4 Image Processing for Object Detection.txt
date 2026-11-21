@@ -1,0 +1,53 @@
+ROBOTICS EXP 4 COLAB
+
+
+# Experiment 4: Image Processing for Object Detection
+
+!pip install ultralytics opencv-python -q
+
+from ultralytics import YOLO
+from google.colab import files
+import matplotlib.pyplot as plt
+
+# Load pre-trained YOLO model
+model = YOLO("yolov8n.pt")
+
+# Upload image
+uploaded = files.upload()
+
+image_path = next(iter(uploaded))
+
+# Perform object detection
+results = model.predict(
+    source=image_path,
+    conf=0.25
+)
+
+# Display detected objects
+print("OBJECT DETECTION RESULTS")
+print("------------------------")
+
+for result in results:
+    for box in result.boxes:
+
+        class_id = int(box.cls[0])
+        confidence = float(box.conf[0])
+
+        print(
+            "Object:",
+            model.names[class_id],
+            "| Confidence:",
+            round(confidence * 100, 2),
+            "%"
+        )
+
+# Display output image
+output_image = results[0].plot()
+
+plt.figure(figsize=(10, 8))
+plt.imshow(output_image[:, :, ::-1])
+plt.title("Object Detection Output")
+plt.axis("off")
+plt.show()
+
+
